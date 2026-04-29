@@ -7,14 +7,6 @@ assignees: ''
 
 ---
 
----
-name: Feature Template
-about: 구현할 기능을 이슈에 등록한다.
-title: "feat: "
-labels: feature
-assignees: ""
----
-
 ## 구현할 기능
 
 > 진행할 작업에 대해 설명해주세요
