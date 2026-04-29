@@ -1,0 +1,32 @@
+---
+name: Refactor Template
+about: 리팩토링 사항을 이슈에 등록한다
+title: ''
+labels: ''
+assignees: ''
+
+---
+
+---
+name: Refactor Template
+about: 리팩토링을 이슈에 등록한다.
+title: "refactor: "
+labels: refactor
+assignees: ""
+---
+
+## 리팩토링 내용
+
+> 리팩토링 내용을 자세히 적어주세요.
+
+## 리팩토링 이유
+
+> 리팩토링 이유를 자세히 적어주세요.
+
+## 참고 사항
+
+> 코드 리뷰 시 참고할 만한 사항이나 주의할 점을 작성해주세요.
+
+## 연관 이슈
+
+> 이 PR과 연관된 이슈 번호를 작성하세요. 예) close #10
