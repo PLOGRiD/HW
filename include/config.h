@@ -1,11 +1,8 @@
-#ifndef __CONFIG_H__
-#define __CONFIG_H__
+#pragma once
 
 // ------------------- GPIO PIN NUMBER
 
-// ultrasonic
-#define TRIG_PIN = 23
-#define ECHO_PIN = 24
+// ultrasonic (5V)
+#define TRIG_PIN 23
+#define ECHO_PIN 24
 
-
-#endif

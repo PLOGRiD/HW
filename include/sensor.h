@@ -1,5 +1,4 @@
-#ifndef __SENSOR_H__
-#define __SENSOR_H__
+#pragma once
 
 class Ultrasonic {
 private:
@@ -11,7 +10,5 @@ public:
 
     void init_sensor(); // 초기화
     double get_distance(); // 거리 측정
-    void test_work(); // 작동 테스트용
+    void test_work(int delay_time); // 작동 테스트용
 };
-
-#endif
