@@ -4,15 +4,10 @@
 #include <iostream>
 
 Ultrasonic::Ultrasonic(int trig, int echo)
-    : trig_pin(trig), echo_pin(echo) {}
+    : trig_pin(trig), echo_pin(echo), base_distance(0), count(0) {}
     
 
 void Ultrasonic::init_sensor() {
-    if (wiringPiSetup() == -1) {
-        std::cerr << "[wiringPi] Error: set gpio\n";
-        return;
-    }
-
     pinMode(trig_pin, OUTPUT);
     pinMode(echo_pin, INPUT);
 
@@ -24,15 +19,58 @@ double Ultrasonic::get_distance() {
     delayMicroseconds(10);
     digitalWrite(trig_pin, LOW);
 
-    while (digitalRead(echo_pin) == LOW);
-    unsigned int time = micros();
+    unsigned int start = micros();
+    while (digitalRead(echo_pin) == LOW) {
+        if (micros() - start > 30000) return -1;
+    }
 
-    while (digitalRead(echo_pin) == HIGH);
-    time = micros() - time;
+    start = micros();
+    while (digitalRead(echo_pin) == HIGH) {
+        if (micros() - start > 30000) return -1;
+    }
+    unsigned int time = micros() - start;
 
     double distance = time / 58.0;
 
     return distance;
+}
+
+void Ultrasonic::set_base(){
+    double sum = 0;
+    double distance;
+
+    for(int i = 0; i < 10; i++){
+        distance = get_distance();
+        if (distance < 0){
+            i--;
+            continue;
+        }
+        sum += distance;
+        delay(50);
+    }
+
+    base_distance = sum / 10.0;
+}
+
+bool Ultrasonic::detect_event(double distance){
+    if (distance < 0){
+        std::cerr<<"get_distance Error\n";
+        return false;
+    }
+
+    bool isChanged = (distance < base_distance - DETECT_GAP);
+
+    if (isChanged) {
+        count++;
+        if (count >= DETECT_COUNT) {
+            count = 0;
+            return true;
+        }
+    } else {
+        count = 0;
+    }
+
+    return false;
 }
 
 void Ultrasonic::test_work(int delay_time){

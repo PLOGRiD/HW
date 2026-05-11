@@ -5,7 +5,10 @@
 
 
 int main(void){
-
+    if (wiringPiSetup() == -1) {
+        std::cerr << "[wiringPi] Error: set gpio\n";
+        return;
+    }
 
     return 0;
 }
