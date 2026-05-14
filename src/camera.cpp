@@ -1,7 +1,4 @@
-// camera.cpp
-
 #include "camera.h"
-
 #include <iostream>
 #include <ctime>
 #include <cstdlib>
@@ -39,7 +36,6 @@ std::string Camera::capture() {
     std::string filename =
         "./images/" + std::to_string(now) + ".jpg";
 
-    // Camera Module V3 촬영
     std::string command =
         "libcamera-jpeg "
         "-n "
