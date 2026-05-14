@@ -6,7 +6,9 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 set(SOURCES
-    
+    src/main.cpp
+    src/camera.cpp
+    lib/SparkFun_AS7265X.cpp
 )
 
 add_executable(
@@ -14,7 +16,10 @@ add_executable(
     ${SOURCES}
 )
 
-target_include_directories(${PACKAGE_NAME}_main PRIVATE include)
+target_include_directories(${PACKAGE_NAME}_main PRIVATE 
+    include
+    lib
+)
 
 target_link_libraries(
     ${PACKAGE_NAME}_main
