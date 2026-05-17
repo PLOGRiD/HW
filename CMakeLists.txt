@@ -6,7 +6,8 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 set(SOURCES
-    
+    src/main.cpp
+    src/camera.cpp
 )
 
 add_executable(
