@@ -2,6 +2,7 @@
 #include <iostream>
 #include <fstream>
 #include <wiringPi.h>
+#include <string>
 
 using namespace std;
 
@@ -27,24 +28,25 @@ SpectroscopyData SpectroscopySensor::readAllChannels(){
     SpectroscopyData data;
 
     as7265x.takeMeasurementsWithBulb();
-    data.A = as7265x.getA();
-    data.B = as7265x.getB();
-    data.C = as7265x.getC();
-    data.D = as7265x.getD();
-    data.E = as7265x.getE();
-    data.F = as7265x.getF();
-    data.G = as7265x.getG();
-    data.H = as7265x.getH();
-    data.I = as7265x.getI();
-    data.J = as7265x.getJ();
-    data.K = as7265x.getK();
-    data.L = as7265x.getL();
-    data.R = as7265x.getR();
-    data.S = as7265x.getS();
-    data.T = as7265x.getT();
-    data.U = as7265x.getU();
-    data.V = as7265x.getV();
-    data.W = as7265x.getW();
+    delay(100);
+    data.A = as7265x.getCalibratedA();
+    data.B = as7265x.getCalibratedB();
+    data.C = as7265x.getCalibratedC();
+    data.D = as7265x.getCalibratedD();
+    data.E = as7265x.getCalibratedE();
+    data.F = as7265x.getCalibratedF();
+    data.G = as7265x.getCalibratedG();
+    data.H = as7265x.getCalibratedH();
+    data.I = as7265x.getCalibratedI();
+    data.J = as7265x.getCalibratedJ();
+    data.K = as7265x.getCalibratedK();
+    data.L = as7265x.getCalibratedL();
+    data.R = as7265x.getCalibratedR();
+    data.S = as7265x.getCalibratedS();
+    data.T = as7265x.getCalibratedT();
+    data.U = as7265x.getCalibratedU();
+    data.V = as7265x.getCalibratedV();
+    data.W = as7265x.getCalibratedW();
 
     return data;
 }
@@ -55,10 +57,11 @@ void SpectroscopySensor::collect_data_for_ai(){
 
     csvFile.seekp(0, ios::end);
     if(csvFile.tellp() == 0){
-        csvFile<<"Label,A,B,C,D,E,F,G,H,I,J,K,L,R,S,T,U,V,W\n";
+        csvFile<<"Label,A,B,C,D,E,F,G,H,I,J,K,L,R,S,T,U,V,W,note\n";
     }
 
     int userInput =-1;
+    string note;
     while(true){
         cout<<"---------------------------\n";
         for(const auto& pair:labels){
@@ -79,13 +82,18 @@ void SpectroscopySensor::collect_data_for_ai(){
             break;
         }
 
+        note=" ";
+        cout<<"memo : ";
+        cin>>note;
+
         cout<<"wait...\n";
 
         SpectroscopyData currentData = readAllChannels();
 
         csvFile << labels[userInput] << "," << currentData.A << ","<< currentData.B << ","<< currentData.C << ","<< currentData.D << ","<< currentData.E << ","
         << currentData.F << ","<< currentData.G << ","<< currentData.H << ","<< currentData.I << ","<< currentData.J << ","<< currentData.K << ","<< currentData.L << ","
-        << currentData.R << ","<< currentData.S << ","<< currentData.T << ","<< currentData.U << ","<< currentData.V << ","<< currentData.W <<"\n";
+        << currentData.R << ","<< currentData.S << ","<< currentData.T << ","<< currentData.U << ","<< currentData.V << ","<< currentData.W<<","
+        <<note<<"\n";
 
         cout<<"finish\n";
 
