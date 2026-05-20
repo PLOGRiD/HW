@@ -9,10 +9,7 @@ int main() {
         return -1;
     }
 
-    sensor.collect_data_for_ai();
-
-    return 0;
-
+    sensor.collectDataForAI();
 
     // Camera cam;
 

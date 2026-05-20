@@ -15,11 +15,18 @@ class SpectroscopySensor{
     private:
         AS7265X as7265x;
         std::map<int, std::string> labels;
-        std::string filename;
+        std::string file_name;
+        SpectroscopyData dark_ref;
+        SpectroscopyData white_ref;
+
+        float calcReflectance(float raw, float dark, float white);
 
     public:
-    SpectroscopySensor();
-    bool init();
-    SpectroscopyData readAllChannels();
-    void collect_data_for_ai();
+        SpectroscopySensor();
+        bool init();
+        SpectroscopyData readAllChannelsWithBulb();
+        SpectroscopyData readAllChannels();
+        SpectroscopyData normalizeAllChannels();
+        void collectDataForAI();
+        void calibrateReferences();
 };
