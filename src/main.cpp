@@ -4,13 +4,19 @@
 int main() {
 
     Camera cam;
+    int input = 0;
+    bool eventDetected = false;
 
     if (!cam.init()) {
         return -1;
     }
 
-    // 이벤트 발생했다고 가정
-    bool eventDetected = true;
+    std::cout<<"input 1\n";
+    std::cin>>input;
+
+    if (input == 1){
+        eventDetected = true;
+    }
 
     if (eventDetected) {
 
