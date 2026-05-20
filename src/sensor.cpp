@@ -90,6 +90,12 @@ void SpectroscopySensor::calibrateReferences() {
     dark_ref = readAllChannels();
     cout << "finish\n\n";
 
+    cout<< dark_ref.A << ","<< dark_ref.B << ","<< dark_ref.C << ","<< dark_ref.D << ","<< dark_ref.E << ","
+                << dark_ref.F << ","<< dark_ref.G << ","<< dark_ref.H << ","<< dark_ref.I << ","<< dark_ref.J << ","
+                << dark_ref.K << ","<< dark_ref.L << ","<< dark_ref.R << ","<< dark_ref.S << ","<< dark_ref.T << ","
+                << dark_ref.U << ","<< dark_ref.V << ","<< dark_ref.W << "\n";
+
+
     cout << "---------------------------\n";
     cout << "measure white reference\n";
     cout << "enter with white paper\n";
@@ -99,6 +105,11 @@ void SpectroscopySensor::calibrateReferences() {
     white_ref = readAllChannelsWithBulb();
     cout << "finish\n";
     cout << "---------------------------\n\n";
+
+    cout<< white_ref.A << ","<< white_ref.B << ","<< white_ref.C << ","<< white_ref.D << ","<< white_ref.E << ","
+                << white_ref.F << ","<< white_ref.G << ","<< white_ref.H << ","<< white_ref.I << ","<< white_ref.J << ","
+                << white_ref.K << ","<< white_ref.L << ","<< white_ref.R << ","<< white_ref.S << ","<< white_ref.T << ","
+                << white_ref.U << ","<< white_ref.V << ","<< white_ref.W << "\n";
 }
 
 SpectroscopyData SpectroscopySensor::normalizeAllChannels(){
