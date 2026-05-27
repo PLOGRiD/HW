@@ -8,6 +8,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 set(SOURCES
     src/main.cpp
     src/camera.cpp
+    src/sensor.cpp
+    lib/as7265x/SparkFun_AS7265X.cpp
 )
 
 add_executable(
@@ -15,7 +17,10 @@ add_executable(
     ${SOURCES}
 )
 
-target_include_directories(${PACKAGE_NAME}_main PRIVATE include)
+target_include_directories(${PACKAGE_NAME}_main PRIVATE 
+    include
+    lib/as7265x
+)
 
 target_link_libraries(
     ${PACKAGE_NAME}_main
