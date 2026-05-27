@@ -37,7 +37,7 @@ std::string Camera::capture() {
         "./images/" + std::to_string(now) + ".jpg";
 
     std::string command =
-        "libcamera-jpeg "
+        "rpicam-jpeg "
         "-n "
         "--width 1920 "
         "--height 1080 "
