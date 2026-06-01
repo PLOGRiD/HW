@@ -31,9 +31,11 @@ bool Camera::init() {
     // cap.set(cv::CAP_PROP_FRAME_WIDTH, FRAME_WIDTH);
     // cap.set(cv::CAP_PROP_FRAME_HEIGHT, FRAME_HEIGHT);
 
+    cap.set(cv::CAP_PROP_AUTOFOCUS, 1);
+
     // 예열용 프레임 읽어오기
     cv::Mat dummy;
-    for(int i = 0; i < 10; i++) {
+    for(int i = 0; i < 40; i++) {
         cap.read(dummy);
     }
 
