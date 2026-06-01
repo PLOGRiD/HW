@@ -5,6 +5,8 @@ project(${PACKAGE_NAME} LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
+find_package(OpenCV REQUIRED)
+
 set(SOURCES
     src/main.cpp
     src/camera.cpp
@@ -20,9 +22,11 @@ add_executable(
 target_include_directories(${PACKAGE_NAME}_main PRIVATE 
     include
     lib/as7265x
+    ${OpenCV_INCLUDE_DIRS}
 )
 
 target_link_libraries(
     ${PACKAGE_NAME}_main
     wiringPi
+    ${OpenCV_LIBS}
 )
