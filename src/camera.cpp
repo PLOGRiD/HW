@@ -1,9 +1,10 @@
 #include "camera.h"
-#include "common.h"
+#include "config.h"
 #include <iostream>
 #include <ctime>
 #include <cstdlib>
 #include <filesystem>
+#include <vector>
 
 Camera::Camera() {
     initialized = false;
@@ -27,13 +28,12 @@ bool Camera::init() {
         return false;
     }
 
-
-    cap.set(cv::CAP_PROP_FRAME_WIDTH, FRAME_WIDTH);
-    cap.set(cv::CAP_PROP_FRAME_HEIGHT, FRMAE_HEIGHT);
+    // cap.set(cv::CAP_PROP_FRAME_WIDTH, FRAME_WIDTH);
+    // cap.set(cv::CAP_PROP_FRAME_HEIGHT, FRAME_HEIGHT);
 
     // 예열용 프레임 읽어오기
     cv::Mat dummy;
-    for(int i = 0; i < 5; i++) {
+    for(int i = 0; i < 10; i++) {
         cap.read(dummy);
     }
 
