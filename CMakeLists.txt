@@ -15,10 +15,14 @@ add_executable(
     ${SOURCES}
 )
 
-target_include_directories(${PACKAGE_NAME}_main PRIVATE include)
+target_include_directories(${PACKAGE_NAME}_main PRIVATE 
+    include
+    lib/as7265x
+    ${OpenCV_INCLUDE_DIRS}
+)
 
 target_link_libraries(
     ${PACKAGE_NAME}_main
     wiringPi
+    ${OpenCV_LIBS}
 )
-
