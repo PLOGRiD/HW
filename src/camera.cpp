@@ -1,20 +1,43 @@
 #include "camera.h"
+#include "config.h"
 #include <iostream>
 #include <ctime>
 #include <cstdlib>
 #include <filesystem>
+#include <vector>
 
 Camera::Camera() {
     initialized = false;
 }
 
 Camera::~Camera() {
+    if (cap.isOpened()) {
+        cap.release();
+    }
 }
 
 bool Camera::init() {
 
     // 저장 폴더 없으면 생성
     std::filesystem::create_directory("./images");
+
+    cap.open(0, cv::CAP_V4L2);
+    
+    if (!cap.isOpened()) {
+        std::cerr << "[Camera] Failed to open camera directly\n";
+        return false;
+    }
+
+    // cap.set(cv::CAP_PROP_FRAME_WIDTH, FRAME_WIDTH);
+    // cap.set(cv::CAP_PROP_FRAME_HEIGHT, FRAME_HEIGHT);
+
+    cap.set(cv::CAP_PROP_AUTOFOCUS, 1);
+
+    // 예열용 프레임 읽어오기
+    cv::Mat dummy;
+    for(int i = 0; i < 40; i++) {
+        cap.read(dummy);
+    }
 
     initialized = true;
 
@@ -30,28 +53,28 @@ std::string Camera::capture() {
         return "";
     }
 
-    // 현재 시간 기반 파일명 생성
-    std::time_t now = std::time(nullptr);
-
-    std::string filename =
-        "./images/" + std::to_string(now) + ".jpg";
-
-    std::string command =
-        "rpicam-jpeg "
-        "-n "
-        "--width 1920 "
-        "--height 1080 "
-        "-o " + filename;
-
-    int result = system(command.c_str());
-
-    if (result != 0) {
+    cv::Mat frame;
+    
+    // 이전 프레임 삭제
+    cap.grab(); 
+    cap.grab();
+    
+    // api 호출
+    if (!cap.read(frame) || frame.empty()) {
         std::cerr << "[Camera] Capture failed\n";
         return "";
     }
 
-    std::cout << "[Camera] Saved: "
-              << filename << "\n";
+    std::time_t now = std::time(nullptr);
+    std::string filename = "./images/" + std::to_string(now) + ".jpg";
+
+    // jpeg로 압축 및 저장
+    if (!cv::imwrite(filename, frame)) {
+        std::cerr << "[Camera] Failed to save image\n";
+        return "";
+    }
+
+    std::cout << "[Camera] Saved: " << filename << "\n";
 
     return filename;
 }

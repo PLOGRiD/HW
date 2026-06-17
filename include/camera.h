@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <opencv2/opencv.hpp>
 
 class Camera {
 public:
@@ -13,4 +14,5 @@ public:
 
 private:
     bool initialized;
+    cv::VideoCapture cap;
 };

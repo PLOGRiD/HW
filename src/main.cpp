@@ -3,31 +3,33 @@
 #include "sensor.h"
 
 int main() {
-    SpectroscopySensor sensor;
+    // SpectroscopySensor sensor;
 
-    if (!sensor.init()){
-        return -1;
-    }
-
-    sensor.collectDataForAI();
-
-    // Camera cam;
-
-    // if (!cam.init()) {
+    // if (!sensor.init()){
     //     return -1;
     // }
 
-    // // 이벤트 발생했다고 가정
-    // bool eventDetected = true;
+    // sensor.collectDataForAI();
 
-    // if (eventDetected) {
+    Camera cam;
 
-    //     std::string imagePath = cam.capture();
+    if (!cam.init()) {
+        return -1;
+    }
 
-    //     if (!imagePath.empty()) {
-    //         std::cout << "Image captured\n";
-    //     }
-    // }
+    // 이벤트 발생했다고 가정
+    int eventDetected;
 
+    while(true){
+        std::cin>>eventDetected;
+
+        if (eventDetected) {
+            std::string imagePath = cam.capture();
+
+            if (!imagePath.empty()) {
+                std::cout << "Image captured\n";
+            }
+        }
+    }
     return 0;
 }
