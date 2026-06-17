@@ -4,6 +4,9 @@
 #include <stdint.h>
 #include "SparkFun_AS7265X.h"
 
+
+// 분광센서 ---------------------------------------------------------------------
+
 struct SpectroscopyData{
     float A, B, C, D, E, F;
     float G, H, I, J, K, L;
@@ -30,6 +33,9 @@ class SpectroscopySensor{
         void calibrateReferences();
 };
 
+
+// 초음파센서 ---------------------------------------------------------------------
+
 class Ultrasonic {
 private:
     int trig_pin;
@@ -46,4 +52,18 @@ public:
     double get_distance(); // 거리 측정
     bool detect_event(double distance); // 이벤트 감지
     void test_work(int delay_time); // 작동 테스트용
+};
+
+
+// led 스트립 ---------------------------------------------------------------------
+
+class LedStrip {
+private:
+    int pin;
+public:
+    LedStrip(int pin_num);
+    
+    void init();
+    void on();
+    void off();
 };

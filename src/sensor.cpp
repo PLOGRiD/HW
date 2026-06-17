@@ -9,6 +9,8 @@
 
 using namespace std;
 
+// 초음파센서 ---------------------------------------------------------------------
+
 Ultrasonic::Ultrasonic(int trig, int echo)
     : trig_pin(trig), echo_pin(echo), base_distance(0), count(0) {}
     
@@ -85,6 +87,9 @@ void Ultrasonic::test_work(int delay_time){
         cout << "[test_ultrasonic] distance: " << get_distance() << "\n";
         delay(delay_time);
     }
+};
+
+// 분광센서 ---------------------------------------------------------------------
 
 SpectroscopySensor::SpectroscopySensor(){
     file_name = "trash_spectroscopy_data_" + to_string(time(nullptr)) + ".csv";
@@ -281,4 +286,22 @@ void SpectroscopySensor::collectDataForAI(){
     }
 
     csv_file.close();
+}
+
+
+// led 스트립 ---------------------------------------------------------------------
+
+LedStrip::LedStrip(int pin) : pin(pin) {}
+
+void LedStrip::init() {
+    pinMode(pin, OUTPUT);
+    digitalWrite(pin, LOW);
+}
+
+void LedStrip::on() {
+    digitalWrite(pin, HIGH);
+}
+
+void LedStrip::off() {
+    digitalWrite(pin, LOW);
 }
