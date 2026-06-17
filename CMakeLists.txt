@@ -5,13 +5,9 @@ project(${PACKAGE_NAME} LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
-find_package(OpenCV REQUIRED)
-
 set(SOURCES
     src/main.cpp
-    src/camera.cpp
     src/sensor.cpp
-    lib/as7265x/SparkFun_AS7265X.cpp
 )
 
 add_executable(

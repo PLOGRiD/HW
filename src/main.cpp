@@ -1,8 +1,13 @@
 #include "camera.h"
 #include <iostream>
 #include "sensor.h"
+#include "config.h"
 
 int main() {
+    if (wiringPiSetup() == -1) {
+        std::cerr << "[wiringPi] Error: set gpio\n";
+        return;
+    }
     // SpectroscopySensor sensor;
 
     // if (!sensor.init()){
