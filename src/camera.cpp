@@ -47,7 +47,6 @@ bool Camera::init() {
 }
 
 std::string Camera::capture() {
-
     if (!initialized) {
         std::cerr << "[Camera] Not initialized\n";
         return "";
@@ -55,11 +54,14 @@ std::string Camera::capture() {
 
     cv::Mat frame;
     
-    // 이전 프레임 삭제
-    cap.grab(); 
-    cap.grab();
-    
-    // api 호출
+    // LED가 켜진 후, 카메라가 빛에 적응하고(Auto-Exposure) 
+    // 버퍼에 쌓인 어두운 과거 프레임을 모두 버리기 위해 충분히 프레임을 읽어냅니다.
+    // 보통 10~15프레임 정도 날려주면 확실합니다.
+    for (int i = 0; i < 15; i++) {
+        cap.read(frame); 
+    }
+
+    // 완전히 빛에 적응된 최신 프레임 획득
     if (!cap.read(frame) || frame.empty()) {
         std::cerr << "[Camera] Capture failed\n";
         return "";

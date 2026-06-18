@@ -45,7 +45,7 @@ void eventProcessingThread(Ultrasonic& ultrasonic, Camera& cam, SpectroscopySens
 
         // 이미지 촬영
         led.on();
-        std::this_thread::sleep_for(std::chrono::milliseconds(300));
+
         currentData.image_path = cam.capture();
         led.off();
 
