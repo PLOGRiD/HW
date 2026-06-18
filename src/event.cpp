@@ -47,7 +47,7 @@ void eventProcessingThread(Ultrasonic& ultrasonic, Camera& cam, SpectroscopySens
         led.on();
 
         currentData.image_path = cam.capture();
-        led.off();
+        // led.off();
 
         if(currentData.image_path.empty()){
             std::cout << "capture failed\n";

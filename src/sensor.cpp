@@ -6,6 +6,7 @@
 #include <fstream>
 #include <ctime>
 #include <string>
+#include <softPwm.h>
 
 using namespace std;
 
@@ -297,11 +298,13 @@ LedStrip::LedStrip(int pin) : pin(pin) {}
 
 void LedStrip::init() {
     pinMode(pin, OUTPUT);
-    digitalWrite(pin, LOW);
+    softPwmCreate(pin,0,40);
+    // digitalWrite(pin, LOW);
 }
 
 void LedStrip::on() {
     digitalWrite(pin, HIGH);
+    softPwmWrite(pin,(50/100.0)*40);
 }
 
 void LedStrip::off() {

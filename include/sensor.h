@@ -2,6 +2,7 @@
 #include <string>
 #include <map>
 #include <stdint.h>
+#include <softPwm.h>
 #include "SparkFun_AS7265X.h"
 
 
