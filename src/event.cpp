@@ -11,17 +11,17 @@
 void eventProcessingThread(Ultrasonic& ultrasonic, Camera& cam, SpectroscopySensor& spec, LedStrip& led) {
     std::cout << "[이벤트 스레드]\n";
 
-    // get spectroscopy's reference
-    std::cout<<"\nclose box\n";
-    std::string dummy;
-    std::getline(std::cin, dummy);
-    spec.readAllChannels();
-    std::cout<<"\nclose box with white paper\n";
-    std::getline(std::cin, dummy);
-    spec.readAllChannelsWithBulb();
+    // // get spectroscopy's reference
+    // std::cout<<"\nclose box\n";
+    // std::string dummy;
+    // std::getline(std::cin, dummy);
+    // spec.readAllChannels();
+    // std::cout<<"\nclose box with white paper\n";
+    // std::getline(std::cin, dummy);
+    // spec.readAllChannelsWithBulb();
 
-    std::cout<<"\nfinish to get reference\n";
-
+    // std::cout<<"\nfinish to get reference\n";
+    // std::getline(std::cin, dummy);
 
     // main
     while (true) {
@@ -54,8 +54,8 @@ void eventProcessingThread(Ultrasonic& ultrasonic, Camera& cam, SpectroscopySens
             continue;
         }
 
-        // 분광센서
-        currentData.spec_data = spec.normalizeAllChannels(); 
+        // // 분광센서
+        // currentData.spec_data = spec.normalizeAllChannels(); 
 
         // 큐에 적재
         {

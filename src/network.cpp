@@ -98,11 +98,11 @@ void httpTransmissionThread() {
                     // 백엔드가 반환한 YOLO 탐지 결과 출력
                     std::cout << "[HTTP] 서버 응답: " << readBuffer << "\n";
 
-                    if (std::remove(dataToSend.image_path.c_str()) == 0) {
-                        std::cout << "[HTTP] 이미지 삭제 완료\n";
-                    } else {
-                        std::cerr << "[HTTP] 이미지 삭제 실패\n";
-                    }
+                    // if (std::remove(dataToSend.image_path.c_str()) == 0) {
+                    //     std::cout << "[HTTP] 이미지 삭제 완료\n";
+                    // } else {
+                    //     std::cerr << "[HTTP] 이미지 삭제 실패\n";
+                    // }
                 }
 
                 curl_mime_free(form);
