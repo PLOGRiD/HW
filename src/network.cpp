@@ -7,7 +7,7 @@
 #include <cstdio>
 
 void httpTransmissionThread() {
-
+    std::cout<<"\nhttp thread\n";
     curl_global_init(CURL_GLOBAL_ALL);
 
     while (true) {

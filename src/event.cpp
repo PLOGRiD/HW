@@ -1,6 +1,9 @@
 #include "event.h"
 #include "common.h"
 #include "config.h"
+#include "camera.h"
+#include "sensor.h"
+
 #include <iostream>
 #include <thread>
 #include <chrono>
@@ -8,6 +11,19 @@
 void eventProcessingThread(Ultrasonic& ultrasonic, Camera& cam, SpectroscopySensor& spec, LedStrip& led) {
     std::cout << "[이벤트 스레드]\n";
 
+    // get spectroscopy's reference
+    std::cout<<"\nclose box\n";
+    std::string dummy;
+    std::getline(std::cin, dummy);
+    spec.readAllChannels();
+    std::cout<<"\nclose box with white paper\n";
+    std::getline(std::cin, dummy);
+    spec.readAllChannelsWithBulb();
+
+    std::cout<<"\nfinish to get reference\n";
+
+
+    // main
     while (true) {
         while(true){
             double dist = ultrasonic.get_distance();
