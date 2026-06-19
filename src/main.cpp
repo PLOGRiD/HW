@@ -29,7 +29,7 @@ int main() {
     led.init();
     ultrasonic.init();
     ultrasonic.set_base();
-    std::cout<<"\nfinish init\n";
+    std::cout<<"\n[System] Initialized\n";
 
     // thread
     std::thread eventThread(eventProcessingThread, std::ref(ultrasonic), std::ref(cam), std::ref(spectro), std::ref(led));

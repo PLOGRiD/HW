@@ -11,7 +11,7 @@
 void eventProcessingThread(Ultrasonic& ultrasonic, Camera& cam, SpectroscopySensor& spec, LedStrip& led) {
     std::cout << "[이벤트 스레드]\n";
 
-    // // get spectroscopy's reference
+    // // 분광센서 전처리용 데이터 수집
     // std::cout<<"\nclose box\n";
     // std::string dummy;
     // std::getline(std::cin, dummy);
@@ -23,7 +23,7 @@ void eventProcessingThread(Ultrasonic& ultrasonic, Camera& cam, SpectroscopySens
     // std::cout<<"\nfinish to get reference\n";
     // std::getline(std::cin, dummy);
 
-    // main
+    // 메인로직 시작
     while (true) {
         while(true){
             double dist = ultrasonic.get_distance();
@@ -34,23 +34,23 @@ void eventProcessingThread(Ultrasonic& ultrasonic, Camera& cam, SpectroscopySens
             std::this_thread::sleep_for(std::chrono::milliseconds(DETECT_DELAY));
         } 
         
-        std::cout << "\n쓰레기 투입 감지\n";
-        std::cout << "\n뚜껑을 닫은 후 엔터를 누르세요\n";
+        std::cout << "\n[eventThread] 쓰레기 투입 감지\n";
+        std::cout << "\n[eventThread] 뚜껑을 닫은 후 엔터를 누르세요\n";
 
         std::string dummy;
         std::getline(std::cin, dummy);
 
-        std::cout << "\n데이터 수집 시작\n";
+        std::cout << "\n[eventThread] 데이터 수집 시작\n";
         PloggingData currentData;
 
         // 이미지 촬영
         led.on();
-
+        std::this_thread::sleep_for(std::chrono::milliseconds(500));
         currentData.image_path = cam.capture();
-        // led.off();
+        led.off();
 
         if(currentData.image_path.empty()){
-            std::cout << "capture failed\n";
+            std::cout << "[Camera] capture failed\n";
             continue;
         }
 
@@ -61,10 +61,10 @@ void eventProcessingThread(Ultrasonic& ultrasonic, Camera& cam, SpectroscopySens
         {
             std::lock_guard<std::mutex> lock(queueMutex);
             uploadQueue.push(currentData);
-            std::cout << "현재 전송 대기열: " << uploadQueue.size() << "개\n";
+            std::cout << "[eventThread] 현재 전송 대기열: " << uploadQueue.size() << "개\n";
         }
 
-        std::cout << "\n쓰레기 제거 후 엔터를 누르세요\n";
+        std::cout << "\n[eventThread] 쓰레기 제거 후 엔터를 누르세요\n";
         std::getline(std::cin, dummy);
     }
 }
