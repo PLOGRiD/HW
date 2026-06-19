@@ -21,7 +21,7 @@ bool Camera::init() {
     std::cout << "[Camera] Starting background camera process (V3 AutoFocus)...\n";
 
     // 카메라 프로세스 준비 + 오토포커스
-    std::string init_cmd = "rpicam-still -t 0 -s -n --autofocus-mode continuous --width 1920 --height 1080 -q 100 -o ./images/latest.jpg &";
+    std::string init_cmd = "rpicam-still -t 0 -s -n --lens-position 5.0 --width 1920 --height 1080 -q 100 -o ./images/latest.jpg &";
     system(init_cmd.c_str());
 
     std::this_thread::sleep_for(std::chrono::seconds(2));
