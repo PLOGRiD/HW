@@ -1,40 +1,42 @@
-#include "camera.h"
 #include <iostream>
+#include <functional>
+#include <thread>
+
+#include "camera.h"
 #include "sensor.h"
 #include "config.h"
+#include "common.h"
+#include "event.h"
+#include "network.h"
+
+std::queue<PloggingData> uploadQueue;
+std::mutex queueMutex;
 
 int main() {
     if (wiringPiSetup() == -1) {
         std::cerr << "[wiringPi] Error: set gpio\n";
-        return;
-    }
-    // SpectroscopySensor sensor;
-
-    // if (!sensor.init()){
-    //     return -1;
-    // }
-
-    // sensor.collectDataForAI();
-
-    Camera cam;
-
-    if (!cam.init()) {
         return -1;
     }
 
-    // 이벤트 발생했다고 가정
-    int eventDetected;
+    SpectroscopySensor spectro;
+    Camera cam;
+    LedStrip led(LED_PIN);
+    Ultrasonic ultrasonic(TRIG_PIN, ECHO_PIN);
 
-    while(true){
-        std::cin>>eventDetected;
+    // init
+    spectro.init();
+    cam.init();
+    led.init();
+    ultrasonic.init();
+    ultrasonic.set_base();
+    std::cout<<"\n[System] Initialized\n";
 
-        if (eventDetected) {
-            std::string imagePath = cam.capture();
+    // thread
+    std::thread eventThread(eventProcessingThread, std::ref(ultrasonic), std::ref(cam), std::ref(spectro), std::ref(led));
+    std::thread httpThread(httpTransmissionThread);
 
-            if (!imagePath.empty()) {
-                std::cout << "Image captured\n";
-            }
-        }
-    }
+    eventThread.join();
+    httpThread.join();
+
     return 0;
 }

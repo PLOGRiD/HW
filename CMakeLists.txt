@@ -33,4 +33,5 @@ target_link_libraries(
     wiringPi
     ${OpenCV_LIBS}
     Threads::Threads
+    curl
 )

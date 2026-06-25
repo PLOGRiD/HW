@@ -2,6 +2,7 @@
 #include <string>
 #include <map>
 #include <stdint.h>
+#include <softPwm.h>
 #include "SparkFun_AS7265X.h"
 
 
@@ -47,7 +48,7 @@ private:
 public:
     Ultrasonic(int trig, int echo);
 
-    void init_sensor(); // 초기화
+    void init(); // 초기화
     void set_base(); // 기본 거리 설정
     double get_distance(); // 거리 측정
     bool detect_event(double distance); // 이벤트 감지

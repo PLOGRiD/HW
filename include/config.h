@@ -12,5 +12,9 @@
 #define FRAME_WIDTH 1080
 #define FRAME_HEIGHT 720
 
+// led strip
+#define LED_PIN 21
+
 // event thread
-#define DETECT_DELAY 100 // 초음파센서 측정 주기
+#define DETECT_DELAY 50 // 초음파센서 측정 주기
+

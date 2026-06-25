@@ -5,9 +5,16 @@
 #include <chrono>
 #include <curl/curl.h>
 #include <cstdio>
+#include <string>
+
+// 서버의 JSON 응답을 std::string으로 받기 위한 콜백 함수
+static size_t WriteCallback(void *contents, size_t size, size_t nmemb, void *userp) {
+    ((std::string*)userp)->append((char*)contents, size * nmemb);
+    return size * nmemb;
+}
 
 void httpTransmissionThread() {
-
+    std::cout<<"\nhttp thread\n";
     curl_global_init(CURL_GLOBAL_ALL);
 
     while (true) {
@@ -31,14 +38,18 @@ void httpTransmissionThread() {
                 curl_mime *form = NULL;
                 curl_mimepart *field = NULL;
 
-                curl_easy_setopt(curl, CURLOPT_URL, "http://192.168.0.x:8080/api/upload"); // 임시주소
+                // 1. URL 변경 (백엔드 Predict API 포트 및 경로 반영)
+                curl_easy_setopt(curl, CURLOPT_URL, "http://13.201.72.157:8000/predict"); 
 
                 form = curl_mime_init(curl);
 
+                // 2. 파일 필드 이름을 백엔드 명세서에 맞춰 "file"로 변경
                 field = curl_mime_addpart(form);
-                curl_mime_name(field, "image");
+                curl_mime_name(field, "file");
                 curl_mime_filedata(field, dataToSend.image_path.c_str());
 
+                // 3. 기존 분광센서(spectroscopy) 데이터 전송 부분 주석 처리
+                /*
                 std::string spec_json = "{\"A\":" + std::to_string(dataToSend.spec_data.A) + 
                                         ", \"B\":" + std::to_string(dataToSend.spec_data.B) +
                                         ", \"C\":" + std::to_string(dataToSend.spec_data.C) +
@@ -62,9 +73,16 @@ void httpTransmissionThread() {
                 field = curl_mime_addpart(form);
                 curl_mime_name(field, "spectroscopy");
                 curl_mime_data(field, spec_json.c_str(), CURL_ZERO_TERMINATED);
+                */
 
                 curl_easy_setopt(curl, CURLOPT_MIMEPOST, form);
 
+                // 4. 서버로부터 탐지 결과(JSON)를 받기 위한 버퍼 설정
+                std::string readBuffer;
+                curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
+                curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
+
+                // HTTP POST 요청 전송
                 CURLcode res = curl_easy_perform(curl);
                 
                 if(res != CURLE_OK) {
@@ -73,16 +91,18 @@ void httpTransmissionThread() {
                         std::lock_guard<std::mutex> lock(queueMutex);
                         uploadQueue.push(dataToSend);
                     }
-
                     std::this_thread::sleep_for(std::chrono::seconds(3));
-
                 } else {
                     std::cout << "[HTTP] 전송 완료\n";
+                    
+                    // 백엔드가 반환한 YOLO 탐지 결과 출력
+                    std::cout << "[HTTP] 서버 응답: " << readBuffer << "\n";
 
-                    if (std::remove(dataToSend.image_path.c_str()) == 0) {
-                    } else {
-                        std::cerr << "[HTTP] 이미지 삭제 실패\n";
-                    }
+                    // if (std::remove(dataToSend.image_path.c_str()) == 0) {
+                    //     std::cout << "[HTTP] 이미지 삭제 완료\n";
+                    // } else {
+                    //     std::cerr << "[HTTP] 이미지 삭제 실패\n";
+                    // }
                 }
 
                 curl_mime_free(form);

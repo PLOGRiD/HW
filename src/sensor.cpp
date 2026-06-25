@@ -6,6 +6,7 @@
 #include <fstream>
 #include <ctime>
 #include <string>
+#include <softPwm.h>
 
 using namespace std;
 
@@ -15,7 +16,7 @@ Ultrasonic::Ultrasonic(int trig, int echo)
     : trig_pin(trig), echo_pin(echo), base_distance(0), count(0) {}
     
 
-void Ultrasonic::init_sensor() {
+void Ultrasonic::init() {
     pinMode(trig_pin, OUTPUT);
     pinMode(echo_pin, INPUT);
 
@@ -70,13 +71,15 @@ bool Ultrasonic::detect_event(double distance){
 
     if (isChanged) {
         count++;
-        if (count >= DETECT_COUNT) {
-            count = 0;
-            return true;
-        }
-    } else {
-        count = 0;
+        // if (count >= DETECT_COUNT) {
+        //     count = 0;
+        //     return true;
+        // }
+        return true;
     }
+    // else {
+    //     count = 0;
+    // }
 
     return false;
 }
@@ -295,11 +298,13 @@ LedStrip::LedStrip(int pin) : pin(pin) {}
 
 void LedStrip::init() {
     pinMode(pin, OUTPUT);
-    digitalWrite(pin, LOW);
+    softPwmCreate(pin,0,40);
+    // digitalWrite(pin, LOW);
 }
 
 void LedStrip::on() {
     digitalWrite(pin, HIGH);
+    softPwmWrite(pin,(10/100.0)*40);
 }
 
 void LedStrip::off() {
