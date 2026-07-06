@@ -1,9 +1,9 @@
 #pragma once
 
+#include "sensor/spectroscopy.h"
 #include <string>
 #include <queue>
 #include <mutex>
-#include "sensor.h"
 
 struct PloggingData {
     std::string image_path;

@@ -1,13 +1,19 @@
 #include <iostream>
 #include <functional>
 #include <thread>
+#include <queue>
+#include <mutex>
+#include <wiringPi.h>
 
-#include "camera.h"
-#include "sensor.h"
 #include "config.h"
 #include "common.h"
 #include "event.h"
 #include "network.h"
+
+#include "sensor/camera.h"
+#include "sensor/ultrasonic.h"
+#include "sensor/spectroscopy.h"
+#include "sensor/ledStrip.h"
 
 std::queue<PloggingData> uploadQueue;
 std::mutex queueMutex;
@@ -32,8 +38,8 @@ int main() {
     std::cout<<"\n[System] Initialized\n";
 
     // thread
-    std::thread eventThread(eventProcessingThread, std::ref(ultrasonic), std::ref(cam), std::ref(spectro), std::ref(led));
-    std::thread httpThread(httpTransmissionThread);
+    std::thread eventThread(event_processing_thread, std::ref(ultrasonic), std::ref(cam), std::ref(spectro), std::ref(led));
+    std::thread httpThread(http_transmission_thread);
 
     eventThread.join();
     httpThread.join();

@@ -1,12 +1,11 @@
 #include "event.h"
 #include "common.h"
 #include "config.h"
-#include "camera.h"
-#include "sensor.h"
 
 #include <iostream>
 #include <thread>
 #include <chrono>
+#include <string>
 
 void event_processing_thread(Ultrasonic& ultrasonic, Camera& cam, SpectroscopySensor& spec, LedStrip& led) {
     std::cout << "[이벤트 스레드]\n";
