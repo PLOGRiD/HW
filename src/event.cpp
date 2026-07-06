@@ -8,7 +8,7 @@
 #include <thread>
 #include <chrono>
 
-void eventProcessingThread(Ultrasonic& ultrasonic, Camera& cam, SpectroscopySensor& spec, LedStrip& led) {
+void event_processing_thread(Ultrasonic& ultrasonic, Camera& cam, SpectroscopySensor& spec, LedStrip& led) {
     std::cout << "[이벤트 스레드]\n";
 
     // // 분광센서 전처리용 데이터 수집

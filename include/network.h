@@ -1,3 +1,3 @@
 #pragma once
 
-void httpTransmissionThread();
+void http_transmission_thread();

@@ -3,6 +3,9 @@
 #include <map>
 #include <stdint.h>
 #include <softPwm.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <termios.h>
 #include "SparkFun_AS7265X.h"
 
 
@@ -22,16 +25,16 @@ class SpectroscopySensor{
         SpectroscopyData dark_ref;
         SpectroscopyData white_ref;
 
-        float calcReflectance(float raw, float dark, float white);
+        float calc_reflectance(float raw, float dark, float white);
 
     public:
         SpectroscopySensor();
         bool init();
-        SpectroscopyData readAllChannelsWithBulb();
-        SpectroscopyData readAllChannels();
-        SpectroscopyData normalizeAllChannels();
-        void collectDataForAI();
-        void calibrateReferences();
+        SpectroscopyData read_all_channels_with_bulb();
+        SpectroscopyData read_all_channels();
+        SpectroscopyData normalize_all_channels();
+        void collect_data_for_AI();
+        void calibrate_references();
 };
 
 
@@ -68,3 +71,21 @@ public:
     void on();
     void off();
 };
+
+// gps ---------------------------------------------------------------------
+
+class GpsSensor {
+private:
+    int serial_fd;
+    std::string port_name;
+
+    bool parse_nmea(const std::string& nmea_line, double& lat, double& lon, std::string& time);
+
+public:
+    GpsSensor(std::string port);
+    ~GpsSensor();
+    void init();
+    void update_gps(double& out_lat, double& out_lon, std::string& out_time);
+};
+
+void gps_thread(); 

@@ -13,7 +13,7 @@ static size_t WriteCallback(void *contents, size_t size, size_t nmemb, void *use
     return size * nmemb;
 }
 
-void httpTransmissionThread() {
+void http_transmission_thread() {
     std::cout<<"\nhttp thread\n";
     curl_global_init(CURL_GLOBAL_ALL);
 
