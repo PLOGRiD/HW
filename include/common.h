@@ -8,6 +8,7 @@
 struct PloggingData {
     std::string image_path;
     SpectroscopyData spec_data;
+    GpsData gps_location;
 };
 
 struct GpsData {
