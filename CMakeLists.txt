@@ -35,4 +35,5 @@ target_link_libraries(
     wiringPi
     Threads::Threads
     curl
+    mosquitto
 )
