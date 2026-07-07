@@ -39,8 +39,8 @@ int main() {
     cam.init();
     led.init();
     ultrasonic.init();
-    ultrasonic.set_base();
-    gps.init();
+    // ultrasonic.set_base();
+    servo.init();
     std::cout<<"\n[System] Initialized\n";
 
     // thread

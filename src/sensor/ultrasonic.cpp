@@ -14,6 +14,9 @@ void Ultrasonic::init() {
     pinMode(echo_pin, INPUT);
 
     digitalWrite(trig_pin, LOW);
+
+    //temp
+    base_distance=BASE_DISTANCE;
     std::cout<<"[ultrasonic] Initialized\n";
 }
 

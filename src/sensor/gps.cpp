@@ -93,9 +93,13 @@ void GpsSensor::update_gps(double& out_lat, double& out_lon, std::string& out_ti
         int n = read(serial_fd, &c, 1);
         if (n > 0) {
             if (c == '\n') {
+                std::cout<<"[Raw GPS]"<<line<<"\n";
                 // 줄바꿈을 만나면 파싱 시도
                 if (parse_nmea(line, out_lat, out_lon, out_time)) {
                     data_updated = true; // 파싱 성공시 루프 탈출
+                }
+                else{
+                    data_updated=true; // temp for test
                 }
                 line = ""; // 다음 줄을 위해 초기화
             } else if (c != '\r') {
@@ -109,9 +113,10 @@ void GpsSensor::update_gps(double& out_lat, double& out_lon, std::string& out_ti
 }
 
 void gps_thread(){
+    std::cout<<"[GPS Thread]\n";
     // 1. 스레드가 시작될 때 GPS 센서 객체를 생성하고 초기화합니다.
     // 라즈베리파이4의 UART 포트 경로를 적어줍니다. 기본 하드웨어 시리얼은 보통 "/dev/ttyS0" 입니다.
-    GpsSensor sensor("/dev/ttyS0"); 
+    GpsSensor sensor(GPS_SERIAL_PORT); 
     sensor.init();
 
     // 센서 데이터를 받아올 로컬 임시 변수들
