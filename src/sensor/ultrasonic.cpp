@@ -1,4 +1,4 @@
-#include "ultrasonic.h"
+#include "sensor/ultrasonic.h"
 #include "config.h"
 #include <wiringPi.h>
 #include <iostream>
@@ -14,6 +14,7 @@ void Ultrasonic::init() {
     pinMode(echo_pin, INPUT);
 
     digitalWrite(trig_pin, LOW);
+    std::cout<<"[ultrasonic] Initialized\n";
 }
 
 double Ultrasonic::get_distance() {

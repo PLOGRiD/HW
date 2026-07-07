@@ -1,4 +1,4 @@
-#include "camera.h"
+#include "sensor/camera.h"
 #include <iostream>
 #include <ctime>
 #include <cstdlib>

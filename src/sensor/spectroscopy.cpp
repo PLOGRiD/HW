@@ -1,4 +1,4 @@
-#include "spectroscopy.h"
+#include "sensor/spectroscopy.h"
 #include "SparkFun_AS7265X.h"
 #include <iostream>
 #include <fstream>
@@ -22,7 +22,8 @@ bool SpectroscopySensor::init(){
         return false;
     }
     as7265x.disableIndicator();
-    
+    cout<<"[AS7265X] Initialized\n";
+
     return true;
 }
 

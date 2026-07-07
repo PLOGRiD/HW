@@ -1,4 +1,6 @@
+#include "sensor/gps.h"
 #include "config.h"
+#include "common.h"
 #include <iostream>
 #include <fcntl.h>
 #include <unistd.h>
@@ -6,8 +8,6 @@
 #include <vector>
 #include <sstream>
 #include <cstring>
-
-using namespace std;
 
 GpsSensor::GpsSensor(std::string port) : port_name(port), serial_fd(-1) {}
 
@@ -39,7 +39,7 @@ void GpsSensor::init() {
     options.c_cflag |= CS8;              // 8 데이터 비트
 
     tcsetattr(serial_fd, TCSANOW, &options);
-    std::cout << "[Info] GPS 센서 초기화 완료 (" << port_name << ")" << std::endl;
+    std::cout<<"[GPS] Initialized\n";
 }
 
 // NMEA 문자열 파싱 (DDMM.MMMM -> DD.DDDD 변환 포함)

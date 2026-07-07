@@ -1,7 +1,8 @@
-#include "ledStrip.h"
+#include "sensor/ledStrip.h"
 #include "config.h"
 #include <wiringPi.h>
 #include <softPwm.h>
+#include <iostream>
 
 LedStrip::LedStrip(int pin) : pin(pin) {}
 
@@ -9,6 +10,7 @@ void LedStrip::init() {
     pinMode(pin, OUTPUT);
     softPwmCreate(pin,0,40);
     // digitalWrite(pin, LOW);
+    std::cout<<"[LED] Initialized\n";
 }
 
 void LedStrip::on() {

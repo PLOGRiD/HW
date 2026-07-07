@@ -5,17 +5,17 @@
 #include <queue>
 #include <mutex>
 
-struct PloggingData {
-    std::string image_path;
-    SpectroscopyData spec_data;
-    GpsData gps_location;
-};
-
 struct GpsData {
     double latitude = 0.0;
     double longitude = 0.0;
     std::string timestamp = "";
     bool isValid = false;
+};
+
+struct PloggingData {
+    std::string image_path;
+    SpectroscopyData spec_data;
+    GpsData gps_location;
 };
 
 // 공유 자원
