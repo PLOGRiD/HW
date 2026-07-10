@@ -1,8 +1,10 @@
 #pragma once
 
 // ultrasonic (5V)
-#define TRIG_PIN 24
-#define ECHO_PIN 25
+#define TRIG_PIN_1 23
+#define ECHO_PIN_1 22
+#define TRIG_PIN_2 25
+#define ECHO_PIN_2 24
 
 // detect_event
 #define DETECT_GAP 5.0
@@ -25,6 +27,7 @@
 #define SERVO_TOP_RIGHT 27
 #define SERVO_BOTTOM_LEFT 28
 #define SERVO_BOTTOM_RIGHT 29
+#define SERVO_DELAY 1000
 
 // event thread
 #define DETECT_DELAY 50 // 초음파센서 측정 주기

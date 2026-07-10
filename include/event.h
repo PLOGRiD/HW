@@ -6,4 +6,4 @@
 #include "sensor/ledStrip.h"
 #include "sensor/servo.h"
 
-void event_processing_thread(Ultrasonic& ultrasonic, Camera& cam, SpectroscopySensor& spec, LedStrip& led, ServoManager& servo);
+void event_processing_thread(Ultrasonic& ultrasonic_1, Ultrasonic& ultrasonic_2, Camera& cam, SpectroscopySensor& spec, LedStrip& led, ServoManager& servo);

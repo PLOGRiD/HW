@@ -106,6 +106,7 @@ void http_transmission_thread() {
                     // 백엔드가 반환한 YOLO 탐지 결과 출력
                     std::cout << "[HTTP] 서버 응답: " << readBuffer << "\n";
 
+                    // 
                     // if (std::remove(dataToSend.image_path.c_str()) == 0) {
                     //     std::cout << "[HTTP] 이미지 삭제 완료\n";
                     // } else {
@@ -134,7 +135,7 @@ void mqtt_thread() {
         std::cerr << "[Error] MQTT 클라이언트 생성 실패!" << std::endl;
         return;
     }
-
+    std::cout<<"[MQTT] Initialized\n";
     // 2. 브로커 연결 시도
     int rc = mosquitto_connect(mosq, BROKER_ADDRESS, BROKER_PORT, 60);
     if (rc != MOSQ_ERR_SUCCESS) {

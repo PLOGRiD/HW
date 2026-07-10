@@ -30,7 +30,8 @@ int main() {
     SpectroscopySensor spectro;
     Camera cam;
     LedStrip led(LED_PIN);
-    Ultrasonic ultrasonic(TRIG_PIN, ECHO_PIN);
+    Ultrasonic ultrasonic_1(TRIG_PIN_1, ECHO_PIN_1);
+    Ultrasonic ultrasonic_2(TRIG_PIN_2, ECHO_PIN_2);
     GpsSensor gps(GPS_SERIAL_PORT);
     ServoManager servo(SERVO_TOP_LEFT, SERVO_TOP_RIGHT, SERVO_BOTTOM_LEFT, SERVO_BOTTOM_RIGHT);
 
@@ -38,13 +39,15 @@ int main() {
     spectro.init();
     cam.init();
     led.init();
-    ultrasonic.init();
-    // ultrasonic.set_base();
+    ultrasonic_1.init();
+    ultrasonic_2.init();
+    // ultrasonic_1.set_base();
+    // ultrasonic_2.set_base();
     servo.init();
     std::cout<<"\n[System] Initialized\n";
 
     // thread
-    std::thread eventThread(event_processing_thread, std::ref(ultrasonic), std::ref(cam), std::ref(spectro), std::ref(led), std::ref(servo));
+    std::thread eventThread(event_processing_thread, std::ref(ultrasonic_1), std::ref(ultrasonic_2), std::ref(cam), std::ref(spectro), std::ref(led), std::ref(servo));
     std::thread httpThread(http_transmission_thread);
 
     eventThread.join();
