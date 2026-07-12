@@ -13,11 +13,9 @@ void LedStrip::init() {
 }
 
 void LedStrip::on() {
-    // digitalWrite(pin, HIGH);
     softPwmWrite(pin,(10/100.0)*40);
 }
 
 void LedStrip::off() {
-    // digitalWrite(pin, LOW);
     softPwmWrite(pin,0);
 }

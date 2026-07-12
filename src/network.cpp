@@ -22,8 +22,12 @@ static size_t WriteCallback(void *contents, size_t size, size_t nmemb, void *use
 }
 
 void http_transmission_thread() {
-    std::cout<<"\nhttp thread\n";
+    std::cout << "\nhttp thread\n";
     curl_global_init(CURL_GLOBAL_ALL);
+
+    // 참고: 기존 BROKER_ADDRESS에 HTTP 주소가 들어가 있어서 이를 HTTP 타겟 URL로 사용합니다.
+    // MQTT 브로커 주소는 IP 형태("13.127.245.66")로 따로 분리하시는 것을 권장합니다.
+    const char* HTTP_API_URL = "http://13.127.245.66:808/api/v1/plogging/waste-classification";
 
     while (true) {
         PloggingData dataToSend;
@@ -46,46 +50,66 @@ void http_transmission_thread() {
                 curl_mime *form = NULL;
                 curl_mimepart *field = NULL;
 
-                // 1. URL 변경 (백엔드 Predict API 포트 및 경로 반영)
-                curl_easy_setopt(curl, CURLOPT_URL, "http://13.201.72.157:8000/predict"); 
+                // 1. API 명세서에 맞춘 URL 적용
+                curl_easy_setopt(curl, CURLOPT_URL, HTTP_API_URL); 
 
                 form = curl_mime_init(curl);
 
-                // 2. 파일 필드 이름을 백엔드 명세서에 맞춰 "file"로 변경
+                // 2. 이미지 파일 추가 (필드명: image)
                 field = curl_mime_addpart(form);
-                curl_mime_name(field, "file");
+                curl_mime_name(field, "image");
                 curl_mime_filedata(field, dataToSend.image_path.c_str());
 
-                // 3. 기존 분광센서(spectroscopy) 데이터 전송 부분 주석 처리
-                /*
-                std::string spec_json = "{\"A\":" + std::to_string(dataToSend.spec_data.A) + 
-                                        ", \"B\":" + std::to_string(dataToSend.spec_data.B) +
-                                        ", \"C\":" + std::to_string(dataToSend.spec_data.C) +
-                                        ", \"D\":" + std::to_string(dataToSend.spec_data.D) +
-                                        ", \"E\":" + std::to_string(dataToSend.spec_data.E) +
-                                        ", \"F\":" + std::to_string(dataToSend.spec_data.F) +
-                                        ", \"G\":" + std::to_string(dataToSend.spec_data.G) +
-                                        ", \"H\":" + std::to_string(dataToSend.spec_data.H) +
-                                        ", \"I\":" + std::to_string(dataToSend.spec_data.I) +
-                                        ", \"J\":" + std::to_string(dataToSend.spec_data.J) +
-                                        ", \"K\":" + std::to_string(dataToSend.spec_data.K) +
-                                        ", \"L\":" + std::to_string(dataToSend.spec_data.L) +
-                                        ", \"R\":" + std::to_string(dataToSend.spec_data.R) +
-                                        ", \"S\":" + std::to_string(dataToSend.spec_data.S) +
-                                        ", \"T\":" + std::to_string(dataToSend.spec_data.T) +
-                                        ", \"U\":" + std::to_string(dataToSend.spec_data.U) +
-                                        ", \"V\":" + std::to_string(dataToSend.spec_data.V) +
-                                        ", \"W\":" + std::to_string(dataToSend.spec_data.W) +
-                                        "}";
-                
-                field = curl_mime_addpart(form);
-                curl_mime_name(field, "spectroscopy");
-                curl_mime_data(field, spec_json.c_str(), CURL_ZERO_TERMINATED);
-                */
+                // 3. 최신 GPS 데이터 가져오기
+                GpsData currentGps;
+                {
+                    std::lock_guard<std::mutex> lock(gpsMutex);
+                    currentGps = globalGpsData;
+                }
+
+                // 폼 데이터에 string 값을 추가하는 람다 함수
+                auto add_string_field = [&](const char* name, const std::string& value) {
+                    curl_mimepart* part = curl_mime_addpart(form);
+                    curl_mime_name(part, name);
+                    curl_mime_data(part, value.c_str(), CURL_ZERO_TERMINATED);
+                };
+
+                // 폼 데이터에 double 값을 추가하는 람다 함수
+                auto add_double_field = [&](const char* name, double value) {
+                    curl_mimepart* part = curl_mime_addpart(form);
+                    curl_mime_name(part, name);
+                    std::string val_str = std::to_string(value);
+                    curl_mime_data(part, val_str.c_str(), CURL_ZERO_TERMINATED);
+                };
+
+                // 4. GPS 및 타임스탬프 파라미터 추가
+                add_string_field("timestamp", currentGps.timestamp);
+                add_double_field("latitude", currentGps.latitude);
+                add_double_field("longitude", currentGps.longitude);
+
+                // 5. 분광센서 데이터 파라미터 추가 (a ~ w 소문자 매핑)
+                add_double_field("a", dataToSend.spec_data.A);
+                add_double_field("b", dataToSend.spec_data.B);
+                add_double_field("c", dataToSend.spec_data.C);
+                add_double_field("d", dataToSend.spec_data.D);
+                add_double_field("e", dataToSend.spec_data.E);
+                add_double_field("f", dataToSend.spec_data.F);
+                add_double_field("g", dataToSend.spec_data.G);
+                add_double_field("h", dataToSend.spec_data.H);
+                add_double_field("i", dataToSend.spec_data.I);
+                add_double_field("j", dataToSend.spec_data.J);
+                add_double_field("k", dataToSend.spec_data.K);
+                add_double_field("l", dataToSend.spec_data.L);
+                add_double_field("r", dataToSend.spec_data.R);
+                add_double_field("s", dataToSend.spec_data.S);
+                add_double_field("t", dataToSend.spec_data.T);
+                add_double_field("u", dataToSend.spec_data.U);
+                add_double_field("v", dataToSend.spec_data.V);
+                add_double_field("w", dataToSend.spec_data.W);
 
                 curl_easy_setopt(curl, CURLOPT_MIMEPOST, form);
 
-                // 4. 서버로부터 탐지 결과(JSON)를 받기 위한 버퍼 설정
+                // 6. 서버로부터 탐지 결과(JSON)를 받기 위한 버퍼 설정
                 std::string readBuffer;
                 curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
                 curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
@@ -102,11 +126,9 @@ void http_transmission_thread() {
                     std::this_thread::sleep_for(std::chrono::seconds(3));
                 } else {
                     std::cout << "[HTTP] 전송 완료\n";
-                    
-                    // 백엔드가 반환한 YOLO 탐지 결과 출력
                     std::cout << "[HTTP] 서버 응답: " << readBuffer << "\n";
-
-                    // 
+                    
+                    // 전송 완료 후 이미지 삭제 로직
                     // if (std::remove(dataToSend.image_path.c_str()) == 0) {
                     //     std::cout << "[HTTP] 이미지 삭제 완료\n";
                     // } else {
