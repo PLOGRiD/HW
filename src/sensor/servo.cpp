@@ -26,6 +26,10 @@ void ServoManager::init() {
     std::cout<<"[servo] Initialized\n";
 }
 
+void ServoManager::set_angle(int pin, int pwm_value) {
+    softPwmWrite(pin, pwm_value);
+}
+
 void ServoManager::close_lid() {
     std::cout << "[Servo] 뚜껑 닫기\n";
     set_angle(top_left_pin, ANGLE_135); 
