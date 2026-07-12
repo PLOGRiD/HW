@@ -22,11 +22,9 @@ static size_t WriteCallback(void *contents, size_t size, size_t nmemb, void *use
 }
 
 void http_transmission_thread() {
-    std::cout << "\nhttp thread\n";
+    std::cout<<"\nhttp thread\n";
     curl_global_init(CURL_GLOBAL_ALL);
 
-    // 참고: 기존 BROKER_ADDRESS에 HTTP 주소가 들어가 있어서 이를 HTTP 타겟 URL로 사용합니다.
-    // MQTT 브로커 주소는 IP 형태("13.127.245.66")로 따로 분리하시는 것을 권장합니다.
     const char* HTTP_API_URL = "http://13.127.245.66:808/api/v1/plogging/waste-classification";
 
     while (true) {
@@ -50,22 +48,14 @@ void http_transmission_thread() {
                 curl_mime *form = NULL;
                 curl_mimepart *field = NULL;
 
-                // 1. API 명세서에 맞춘 URL 적용
                 curl_easy_setopt(curl, CURLOPT_URL, HTTP_API_URL); 
 
                 form = curl_mime_init(curl);
 
-                // 2. 이미지 파일 추가 (필드명: image)
+                // 1. 이미지 파일 추가
                 field = curl_mime_addpart(form);
                 curl_mime_name(field, "image");
                 curl_mime_filedata(field, dataToSend.image_path.c_str());
-
-                // 3. 최신 GPS 데이터 가져오기
-                GpsData currentGps;
-                {
-                    std::lock_guard<std::mutex> lock(gpsMutex);
-                    currentGps = globalGpsData;
-                }
 
                 // 폼 데이터에 string 값을 추가하는 람다 함수
                 auto add_string_field = [&](const char* name, const std::string& value) {
@@ -82,12 +72,12 @@ void http_transmission_thread() {
                     curl_mime_data(part, val_str.c_str(), CURL_ZERO_TERMINATED);
                 };
 
-                // 4. GPS 및 타임스탬프 파라미터 추가
-                add_string_field("timestamp", currentGps.timestamp);
-                add_double_field("latitude", currentGps.latitude);
-                add_double_field("longitude", currentGps.longitude);
+                // 2. 패키징된 GPS 및 타임스탬프 파라미터 추가 (dataToSend.gps_location 사용)
+                add_string_field("timestamp", dataToSend.gps_location.timestamp);
+                add_double_field("latitude", dataToSend.gps_location.latitude);
+                add_double_field("longitude", dataToSend.gps_location.longitude);
 
-                // 5. 분광센서 데이터 파라미터 추가 (a ~ w 소문자 매핑)
+                // 3. 패키징된 분광센서 데이터 파라미터 추가
                 add_double_field("a", dataToSend.spec_data.A);
                 add_double_field("b", dataToSend.spec_data.B);
                 add_double_field("c", dataToSend.spec_data.C);
@@ -109,7 +99,7 @@ void http_transmission_thread() {
 
                 curl_easy_setopt(curl, CURLOPT_MIMEPOST, form);
 
-                // 6. 서버로부터 탐지 결과(JSON)를 받기 위한 버퍼 설정
+                // 4. 서버로부터 탐지 결과(JSON)를 받기 위한 버퍼 설정
                 std::string readBuffer;
                 curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
                 curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
@@ -119,6 +109,7 @@ void http_transmission_thread() {
                 
                 if(res != CURLE_OK) {
                     std::cerr << "[HTTP] 전송 실패: " << curl_easy_strerror(res) << "\n";
+                    // 실패 시 큐에 다시 집어넣어 재시도 (재포장 불필요)
                     {
                         std::lock_guard<std::mutex> lock(queueMutex);
                         uploadQueue.push(dataToSend);
@@ -128,7 +119,7 @@ void http_transmission_thread() {
                     std::cout << "[HTTP] 전송 완료\n";
                     std::cout << "[HTTP] 서버 응답: " << readBuffer << "\n";
                     
-                    // 전송 완료 후 이미지 삭제 로직
+                    // 전송이 성공적으로 끝났을 때만 로컬 이미지 삭제
                     // if (std::remove(dataToSend.image_path.c_str()) == 0) {
                     //     std::cout << "[HTTP] 이미지 삭제 완료\n";
                     // } else {
@@ -146,7 +137,6 @@ void http_transmission_thread() {
     
     curl_global_cleanup();
 }
-
 
 void mqtt_thread() {
     // 1. MQTT 라이브러리 초기화 및 클라이언트 생성
