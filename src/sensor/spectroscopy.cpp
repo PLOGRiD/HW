@@ -4,6 +4,7 @@
 #include <fstream>
 #include <ctime>
 #include <wiringPi.h>
+#include <limits>
 
 using namespace std;
 
@@ -169,6 +170,7 @@ void SpectroscopySensor::collect_data_for_AI(){
         string note = " ";
         cout << "메모 : ";
         cin >> note;
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
         SpectroscopyData cal_data = normalize_all_channels();
 

@@ -13,19 +13,6 @@
 void event_processing_thread(Ultrasonic& ultrasonic_1, Ultrasonic& ultrasonic_2, Camera& cam, SpectroscopySensor& spec, LedStrip& led, ServoManager& servo) {
     std::cout << "[이벤트 스레드]\n";
 
-    // // 분광센서 전처리용 데이터 수집
-    // std::cout<<"\nclose box\n";
-    // std::string dummy;
-    // std::getline(std::cin, dummy);
-    // spec.readAllChannels();
-    // std::cout<<"\nclose box with white paper\n";
-    // std::getline(std::cin, dummy);
-    // spec.readAllChannelsWithBulb();
-
-    std::cout<<"\nfinish to get reference\n";
-    std::string dummy;
-    std::getline(std::cin, dummy);
-
     // 메인로직 시작
     while (true) {
         std::cout << "\n[eventThread] 쓰레기 투입 감지 대기\n";
@@ -108,7 +95,7 @@ void event_for_AI_Thread(Camera& cam, SpectroscopySensor& spec, LedStrip& led) {
 
     // 메인로직 시작
     while (true) {
-        std::cout << "\n[eventThread] 쓰레기 투입 후 엔터를 누르세요\n";
+        std::cout << "[eventThread] 쓰레기 투입 후 엔터를 누르세요\n";
 
         std::string dummy;
         std::getline(std::cin, dummy);
@@ -131,6 +118,6 @@ void event_for_AI_Thread(Camera& cam, SpectroscopySensor& spec, LedStrip& led) {
         std::cout << "[eventThread] 분광 데이터 수집 시작\n";
         spec.collect_data_for_AI();
 
-        std::cout<<"[eventThread] 데이터 수집 완료\n";
+        std::cout<<"[eventThread] 분광 데이터 수집 완료\n";
     }
 }
