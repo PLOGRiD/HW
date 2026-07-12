@@ -5,9 +5,10 @@
 #include "SparkFun_AS7265X.h"
 
 struct SpectroscopyData{
-    float A, B, C, D, E, F;
-    float G, H, I, J, K, L;
-    float R, S, T, U, V, W; 
+    // float A, B, C, D, E, F;
+    // float G, H, I, J, K, L;
+    // float R, S, T, U, V, W; 
+    float channel[18];
 };
 
 class SpectroscopySensor{
