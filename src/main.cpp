@@ -53,5 +53,10 @@ int main() {
     eventThread.join();
     httpThread.join();
 
+    // ServoManager servo(SERVO_TOP_LEFT, SERVO_TOP_RIGHT, SERVO_BOTTOM_LEFT, SERVO_BOTTOM_RIGHT);
+    // servo.init();
+    // servo.open_bottom();
+    // servo.open_lid();
+
     return 0;
 }

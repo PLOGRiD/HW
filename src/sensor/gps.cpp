@@ -36,6 +36,10 @@ void GpsSensor::init() {
     options.c_cflag &= ~PARENB;          // 패리티 비트 없음
     options.c_cflag &= ~CSTOPB;          // 1 스탑 비트
     options.c_cflag &= ~CSIZE;
+    double latitude = 0.0;
+    double longitude = 0.0;
+    std::string timestamp = "";
+    bool isValid = false;
     options.c_cflag |= CS8;              // 8 데이터 비트
 
     tcsetattr(serial_fd, TCSANOW, &options);

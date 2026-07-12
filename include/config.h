@@ -1,15 +1,15 @@
 #pragma once
 
 // ultrasonic (5V)
-#define TRIG_PIN_1 23
-#define ECHO_PIN_1 22
-#define TRIG_PIN_2 25
-#define ECHO_PIN_2 24
+#define TRIG_PIN_2 23
+#define ECHO_PIN_2 22
+#define TRIG_PIN_1 3
+#define ECHO_PIN_1 2
 
 // detect_event
 #define DETECT_GAP 5.0
 #define DETECT_COUNT 2
-#define BASE_DISTANCE 20
+#define BASE_DISTANCE 27
 
 // camera
 #define FRAME_WIDTH 1080
