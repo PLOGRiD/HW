@@ -150,8 +150,6 @@ void SpectroscopySensor::collect_data_for_AI(){
         csv_file<<"Label,A,B,C,D,E,F,G,H,I,J,K,L,R,S,T,U,V,W,note\n";
     }
 
-    calibrate_references();
-
     int user_input =-1;
     while(true){
 
@@ -179,6 +177,7 @@ void SpectroscopySensor::collect_data_for_AI(){
             csv_file << cal_data.channel[i] << ",";
         }
         csv_file << note << "\n";
+        
         break;
     }
     csv_file.close();

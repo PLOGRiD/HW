@@ -78,24 +78,24 @@ void http_transmission_thread() {
                 add_double_field("longitude", dataToSend.gps_location.longitude);
 
                 // 3. 패키징된 분광센서 데이터 파라미터 추가
-                add_double_field("a", dataToSend.spec_data.A);
-                add_double_field("b", dataToSend.spec_data.B);
-                add_double_field("c", dataToSend.spec_data.C);
-                add_double_field("d", dataToSend.spec_data.D);
-                add_double_field("e", dataToSend.spec_data.E);
-                add_double_field("f", dataToSend.spec_data.F);
-                add_double_field("g", dataToSend.spec_data.G);
-                add_double_field("h", dataToSend.spec_data.H);
-                add_double_field("i", dataToSend.spec_data.I);
-                add_double_field("j", dataToSend.spec_data.J);
-                add_double_field("k", dataToSend.spec_data.K);
-                add_double_field("l", dataToSend.spec_data.L);
-                add_double_field("r", dataToSend.spec_data.R);
-                add_double_field("s", dataToSend.spec_data.S);
-                add_double_field("t", dataToSend.spec_data.T);
-                add_double_field("u", dataToSend.spec_data.U);
-                add_double_field("v", dataToSend.spec_data.V);
-                add_double_field("w", dataToSend.spec_data.W);
+                add_double_field("a", dataToSend.spec_data.channel[0]);
+                add_double_field("b", dataToSend.spec_data.channel[1]);
+                add_double_field("c", dataToSend.spec_data.channel[2]);
+                add_double_field("d", dataToSend.spec_data.channel[3]);
+                add_double_field("e", dataToSend.spec_data.channel[4]);
+                add_double_field("f", dataToSend.spec_data.channel[5]);
+                add_double_field("g", dataToSend.spec_data.channel[6]);
+                add_double_field("h", dataToSend.spec_data.channel[7]);
+                add_double_field("i", dataToSend.spec_data.channel[8]);
+                add_double_field("j", dataToSend.spec_data.channel[9]);
+                add_double_field("k", dataToSend.spec_data.channel[10]);
+                add_double_field("l", dataToSend.spec_data.channel[11]);
+                add_double_field("r", dataToSend.spec_data.channel[12]);
+                add_double_field("s", dataToSend.spec_data.channel[13]);
+                add_double_field("t", dataToSend.spec_data.channel[14]);
+                add_double_field("u", dataToSend.spec_data.channel[15]);
+                add_double_field("v", dataToSend.spec_data.channel[16]);
+                add_double_field("w", dataToSend.spec_data.channel[17]);
 
                 curl_easy_setopt(curl, CURLOPT_MIMEPOST, form);
 
