@@ -25,7 +25,7 @@ void http_transmission_thread() {
     std::cout<<"\nhttp thread\n";
     curl_global_init(CURL_GLOBAL_ALL);
 
-    const char* HTTP_API_URL = "http://13.127.245.66:808/api/v1/plogging/waste-classification";
+    const char* HTTP_API_URL = "http://13.127.245.66:8080/api/v1/plogging/waste-classification";
 
     while (true) {
         PloggingData dataToSend;
