@@ -57,6 +57,7 @@ void event_processing_thread(Ultrasonic& ultrasonic_1, Ultrasonic& ultrasonic_2,
 
         // 이미지 촬영
         led.on();
+        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
         currentData.image_path = cam.capture();
         led.off();
 

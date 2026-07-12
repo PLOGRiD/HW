@@ -27,7 +27,7 @@
 #define SERVO_TOP_RIGHT 27
 #define SERVO_BOTTOM_LEFT 28
 #define SERVO_BOTTOM_RIGHT 29
-#define SERVO_DELAY 1000
+#define SERVO_DELAY 500
 
 // event thread
 #define DETECT_DELAY 50 // 초음파센서 측정 주기

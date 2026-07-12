@@ -41,8 +41,8 @@ int main() {
     led.init();
     ultrasonic_1.init();
     ultrasonic_2.init();
-    // ultrasonic_1.set_base();
-    // ultrasonic_2.set_base();
+    ultrasonic_1.set_base();
+    ultrasonic_2.set_base();
     servo.init();
     std::cout<<"\n[System] Initialized\n";
 
