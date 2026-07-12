@@ -27,6 +27,6 @@ class SpectroscopySensor{
         SpectroscopyData read_all_channels_with_bulb();
         SpectroscopyData read_all_channels();
         SpectroscopyData normalize_all_channels();
-        void collect_data_for_AI();
+        void collect_data_for_AI(std::string image_path);
         void calibrate_references();
 };

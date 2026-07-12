@@ -5,11 +5,11 @@
 #include <ctime>
 #include <wiringPi.h>
 #include <limits>
+#include <filesystem>
 
 using namespace std;
 
 SpectroscopySensor::SpectroscopySensor(){
-    file_name = "trash_spectroscopy_data_" + to_string(time(nullptr)) + ".csv";
     labels = {
         {1, "PET"},
         {2, "glass"}
@@ -84,13 +84,15 @@ void SpectroscopySensor::calibrate_references() {
     string dummy;
     std::ofstream csv_dark, csv_white;
 
-    csv_dark.open("dark_reference", std::ios::out | std::ios::app);
+    std::filesystem::create_directory("./spectroscopy_datas");
+
+    csv_dark.open("./spectroscopy_datas/dark_reference", std::ios::out | std::ios::app);
     csv_dark.seekp(0, std::ios::end);
     if(csv_dark.tellp() == 0){
         csv_dark<<"A,B,C,D,E,F,G,H,I,J,K,L,R,S,T,U,V,W\n";
     }
 
-    csv_white.open("white_reference", std::ios::out | std::ios::app);
+    csv_white.open("./spectroscopy_datas/white_reference", std::ios::out | std::ios::app);
     csv_white.seekp(0, std::ios::end);
     if(csv_white.tellp() == 0){
         csv_white<<"A,B,C,D,E,F,G,H,I,J,K,L,R,S,T,U,V,W\n";
@@ -142,13 +144,13 @@ SpectroscopyData SpectroscopySensor::normalize_all_channels(){
     return cal_data;
 }
 
-void SpectroscopySensor::collect_data_for_AI(){
+void SpectroscopySensor::collect_data_for_AI(string image_path){
     ofstream csv_file;
-    csv_file.open(file_name, ios::out | ios::app);
+    csv_file.open("./spectroscopy_datas/trash_spectroscopy_data.csv", ios::out | ios::app);
 
     csv_file.seekp(0, ios::end);
     if(csv_file.tellp() == 0){
-        csv_file<<"Label,A,B,C,D,E,F,G,H,I,J,K,L,R,S,T,U,V,W,note\n";
+        csv_file<<"Label,A,B,C,D,E,F,G,H,I,J,K,L,R,S,T,U,V,W,image_path\n";
     }
 
     int user_input =-1;
@@ -161,16 +163,17 @@ void SpectroscopySensor::collect_data_for_AI(){
         cout<<"[Spectroscopy] 라벨 번호를 쓰세요\n";
         
         cin>>user_input;
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
         if(labels.find(user_input) == labels.end()){
             cout<<"[Spectroscopy] 잘못된 번호입니다 다시 입력하세요\n";
             continue;
         }
 
-        string note = " ";
-        cout << "메모 : ";
-        cin >> note;
-        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        // string note = " ";
+        // cout << "메모 : ";
+        // cin >> note;
+        // std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
         SpectroscopyData cal_data = normalize_all_channels();
 
@@ -178,8 +181,8 @@ void SpectroscopySensor::collect_data_for_AI(){
         for(int i=0;i<18;i++){
             csv_file << cal_data.channel[i] << ",";
         }
-        csv_file << note << "\n";
-        
+        csv_file << image_path << "\n";
+
         break;
     }
     csv_file.close();

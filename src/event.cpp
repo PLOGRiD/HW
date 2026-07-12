@@ -116,7 +116,7 @@ void event_for_AI_Thread(Camera& cam, SpectroscopySensor& spec, LedStrip& led) {
 
         // 분광센서
         std::cout << "[eventThread] 분광 데이터 수집 시작\n";
-        spec.collect_data_for_AI();
+        spec.collect_data_for_AI(image_path);
 
         std::cout<<"[eventThread] 분광 데이터 수집 완료\n";
     }
