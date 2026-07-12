@@ -32,46 +32,46 @@ void ServoManager::set_angle(int pin, int pwm_value) {
 
 void ServoManager::close_lid() {
     std::cout << "[Servo] 뚜껑 닫기\n";
-    set_angle(top_left_pin, ANGLE_135); 
+    softPwmWrite(top_left_pin, ANGLE_135); 
     std::this_thread::sleep_for(std::chrono::milliseconds(SERVO_DELAY));
-    set_angle(top_left_pin, 0); // 모터 전력 차단 (파닥거림 방지)
+    softPwmWrite(top_left_pin, 0); // 모터 전력 차단 (파닥거림 방지)
 
-    set_angle(top_right_pin, ANGLE_135);
+    softPwmWrite(top_right_pin, ANGLE_135);
     std::this_thread::sleep_for(std::chrono::milliseconds(SERVO_DELAY));
-    set_angle(top_right_pin, 0); // 모터 전력 차단 (파닥거림 방지)
+    softPwmWrite(top_right_pin, 0); // 모터 전력 차단 (파닥거림 방지)
 }
 
 void ServoManager::open_lid() {
     std::cout << "[Servo] 뚜껑 열기\n";
-    set_angle(top_left_pin, ANGLE_45);
+    softPwmWrite(top_left_pin, ANGLE_45);
     std::this_thread::sleep_for(std::chrono::milliseconds(SERVO_DELAY));
-    set_angle(top_left_pin, 0); 
+    softPwmWrite(top_left_pin, 0); 
 
-    set_angle(top_right_pin, ANGLE_45);
+    softPwmWrite(top_right_pin, ANGLE_45);
     std::this_thread::sleep_for(std::chrono::milliseconds(SERVO_DELAY));
-    set_angle(top_right_pin, 0); 
+    softPwmWrite(top_right_pin, 0); 
 }
 
 void ServoManager::open_bottom() {
     std::cout << "[Servo] 바닥 열기\n";
-    set_angle(bottom_left_pin, ANGLE_45);
+    softPwmWrite(bottom_left_pin, ANGLE_45);
     std::this_thread::sleep_for(std::chrono::milliseconds(SERVO_DELAY));
-    set_angle(bottom_left_pin, 0); 
+    softPwmWrite(bottom_left_pin, 0); 
 
-    set_angle(bottom_right_pin, ANGLE_45);
+    softPwmWrite(bottom_right_pin, ANGLE_45);
     std::this_thread::sleep_for(std::chrono::milliseconds(SERVO_DELAY));
-    set_angle(bottom_right_pin, 0); 
+    softPwmWrite(bottom_right_pin, 0); 
 }
 
 void ServoManager::close_bottom() {
     std::cout << "[Servo] 바닥 닫기\n";
-    set_angle(bottom_left_pin, ANGLE_135);
+    softPwmWrite(bottom_left_pin, ANGLE_135);
     std::this_thread::sleep_for(std::chrono::milliseconds(SERVO_DELAY));
-    set_angle(bottom_left_pin, 0); 
+    softPwmWrite(bottom_left_pin, 0); 
 
-    set_angle(bottom_right_pin, ANGLE_135);
+    softPwmWrite(bottom_right_pin, ANGLE_135);
     std::this_thread::sleep_for(std::chrono::milliseconds(SERVO_DELAY));
-    set_angle(bottom_right_pin, 0); 
+    softPwmWrite(bottom_right_pin, 0); 
 }
 
 void ServoManager::reset() {

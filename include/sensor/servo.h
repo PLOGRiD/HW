@@ -15,7 +15,6 @@ public:
     ServoManager(int tl, int tr, int bl, int br);
     
     void init();
-    void set_angle(int pin, int pwm_value);
     
     // 뚜껑 (투입구) 제어
     void close_lid();   // 뚜껑 닫기 (암실 조성)
