@@ -42,6 +42,7 @@ int main() {
     ultrasonic_1.init();
     ultrasonic_2.init();
     ultrasonic_1.set_base();
+    std::this_thread::sleep_for(std::chrono::milliseconds(DETECT_DELAY));
     ultrasonic_2.set_base();
     servo.init();
     std::cout<<"\n[System] Initialized\n";

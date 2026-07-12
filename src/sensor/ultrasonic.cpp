@@ -16,7 +16,7 @@ void Ultrasonic::init() {
     digitalWrite(trig_pin, LOW);
 
     //temp
-    base_distance=BASE_DISTANCE;
+    set_base();
     std::cout<<"[ultrasonic] Initialized\n";
 }
 

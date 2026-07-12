@@ -9,15 +9,15 @@ LedStrip::LedStrip(int pin) : pin(pin) {}
 void LedStrip::init() {
     pinMode(pin, OUTPUT);
     softPwmCreate(pin,0,40);
-    // digitalWrite(pin, LOW);
     std::cout<<"[LED] Initialized\n";
 }
 
 void LedStrip::on() {
-    digitalWrite(pin, HIGH);
-    // softPwmWrite(pin,(10/100.0)*40);
+    // digitalWrite(pin, HIGH);
+    softPwmWrite(pin,(10/100.0)*40);
 }
 
 void LedStrip::off() {
-    digitalWrite(pin, LOW);
+    // digitalWrite(pin, LOW);
+    softPwmWrite(pin,0);
 }
