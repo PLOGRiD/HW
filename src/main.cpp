@@ -58,17 +58,45 @@ int main() {
     // httpThread.join();
 
 
-    // 데이터 수집
-    SpectroscopySensor spectro;
-    Camera cam;
-    LedStrip led(LED_PIN);
+    // 테스트 및 데이터 수집용 임시 코드
+    while(true){
+        std::cout<<"이용할 서비스 번호를 입력하세요\n1: 데이터 수집\n2:서버 연동 AI 테스트\n";
+        int dummy;
+        std::cin>>dummy;
+        if(dummy==1){
+            // 데이터 수집
+            SpectroscopySensor spectro;
+            Camera cam;
+            LedStrip led(LED_PIN);
 
-    spectro.init();
-    cam.init();
-    led.init();
+            spectro.init();
+            cam.init();
+            led.init();
     
-    std::thread eventThread(event_for_AI_Thread, std::ref(cam), std::ref(spectro), std::ref(led));
-    eventThread.join();
+            std::thread eventThread(event_for_AI_Thread, std::ref(cam), std::ref(spectro), std::ref(led));
+            eventThread.join();
+        }
+        else if(dummy==2){
+            // 서버 연동 AI 테스트
+            SpectroscopySensor spectro;
+            Camera cam;
+            LedStrip led(LED_PIN);
+            GpsSensor gps(GPS_SERIAL_PORT);
+
+            spectro.init();
+            cam.init();
+            led.init();
+
+            std::thread eventThread(event_for_test_Thread,  std::ref(cam), std::ref(spectro), std::ref(led));
+            std::thread httpThread(http_transmission_thread);
+
+            eventThread.join();
+            httpThread.join();
+        }
+        else{
+            std::cout<<"잘못된 입력입니다. 다시 입력하세요\n";
+        }
+    }
 
     return 0;
 }
