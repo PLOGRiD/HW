@@ -98,6 +98,7 @@ void SpectroscopySensor::calibrate_references() {
         csv_white<<"A,B,C,D,E,F,G,H,I,J,K,L,R,S,T,U,V,W\n";
     }
 
+    getline(std::cin, dummy);
     cout << "[get_reference] 박스를 비우고 엔터를 누르세요\n";
     getline(std::cin, dummy);
 
