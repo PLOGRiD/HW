@@ -97,7 +97,7 @@ void GpsSensor::update_gps(double& out_lat, double& out_lon, std::string& out_ti
         int n = read(serial_fd, &c, 1);
         if (n > 0) {
             if (c == '\n') {
-                std::cout<<"[Raw GPS]"<<line<<"\n";
+                // std::cout<<"[Raw GPS]"<<line<<"\n";
                 // 줄바꿈을 만나면 파싱 시도
                 if (parse_nmea(line, out_lat, out_lon, out_time)) {
                     data_updated = true; // 파싱 성공시 루프 탈출
