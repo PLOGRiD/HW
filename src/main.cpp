@@ -89,9 +89,11 @@ int main() {
 
             std::thread eventThread(event_for_test_Thread,  std::ref(cam), std::ref(spectro), std::ref(led));
             std::thread httpThread(http_transmission_thread);
+            std::thread gpsThread(gps_thread);
 
             eventThread.join();
             httpThread.join();
+            gpsThread.join();
         }
         else{
             std::cout<<"잘못된 입력입니다. 다시 입력하세요\n";
