@@ -103,7 +103,7 @@ void GpsSensor::update_gps(double& out_lat, double& out_lon, std::string& out_ti
                     data_updated = true; // 파싱 성공시 루프 탈출
                 }
                 else{
-                    out_time = "2026-08-03T12:00:00+09:00";
+                    out_time = "2026-08-14T12:00:00";
                     data_updated=true; // temp for test
                 }
                 line = ""; // 다음 줄을 위해 초기화
