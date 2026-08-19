@@ -8,6 +8,8 @@
 #include <vector>
 #include <sstream>
 #include <cstring>
+#include <chrono>
+#include <ctime>
 
 GpsSensor::GpsSensor(std::string port) : port_name(port), serial_fd(-1) {}
 
@@ -61,7 +63,14 @@ bool GpsSensor::parse_nmea(const std::string& nmea_line, double& lat, double& lo
 
         // GPGGA는 최소 15개의 필드가 있어야 함
         if (tokens.size() >= 10 && !tokens[2].empty() && !tokens[4].empty()) {
-            time = tokens[1]; // UTC 시간
+            // GPS 토큰 시간(tokens[1])은 버리고 기기의 로컬 시간을 사용[cite: 1]
+            auto now = std::chrono::system_clock::now();
+            std::time_t now_c = std::chrono::system_clock::to_time_t(now);
+            std::tm* now_tm = std::localtime(&now_c);
+
+            char time_buf[30];
+            std::strftime(time_buf, sizeof(time_buf), "%Y-%m-%dT%H:%M:%S", now_tm);
+            time = std::string(time_buf); // 예: "2026-08-14T17:30:15"
 
             // 위도 (Latitude) 파싱: DDMM.MMMM 형식
             double raw_lat = std::stod(tokens[2]);
@@ -103,7 +112,7 @@ void GpsSensor::update_gps(double& out_lat, double& out_lon, std::string& out_ti
                     data_updated = true; // 파싱 성공시 루프 탈출
                 }
                 else{
-                    out_time = "2026-08-14T12:00:00";
+                    out_time = "2026-08-19T12:00:00";
                     data_updated=true; // temp for test
                 }
                 line = ""; // 다음 줄을 위해 초기화
