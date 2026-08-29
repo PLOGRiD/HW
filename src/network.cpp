@@ -25,7 +25,7 @@ void http_transmission_thread() {
     std::cout<<"\nhttp thread\n";
     curl_global_init(CURL_GLOBAL_ALL);
 
-    const char* HTTP_API_URL = "https://plogrid.p-e.kr/api/v1/plogging/waste-classification";
+    const char* HTTP_API_URL = "https://plogrid.p-e.kr/api/v1/trashes/waste-classification";
 
     while (true) {
         PloggingData dataToSend;
@@ -71,6 +71,17 @@ void http_transmission_thread() {
                     std::string val_str = std::to_string(value);
                     curl_mime_data(part, val_str.c_str(), CURL_ZERO_TERMINATED);
                 };
+
+                // 
+                auto add_int64_field = [&](const char* name, int64_t value) {
+                    curl_mimepart* part = curl_mime_addpart(form);
+                    curl_mime_name(part, name);
+                    std::string val_str = std::to_string(value);
+                    curl_mime_data(part, val_str.c_str(), CURL_ZERO_TERMINATED);
+                };
+
+                // 디바이스 id 추가
+                add_int64_field("deviceId", 1);
 
                 // 2. 패키징된 GPS 및 타임스탬프 파라미터 추가 (dataToSend.gps_location 사용)
                 add_string_field("timestamp", dataToSend.gps_location.timestamp);
