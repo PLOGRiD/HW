@@ -93,29 +93,28 @@ bool GpsSensor::parse_nmea(const std::string& nmea_line, double& lat, double& lo
 }
 
 // 센서에서 데이터를 읽어와서 파싱을 시도하는 함수
+// 센서에서 데이터를 읽어와서 파싱을 시도하는 함수
 void GpsSensor::update_gps(double& out_lat, double& out_lon, std::string& out_time) {
     if (serial_fd == -1) return;
 
-    char buffer[256];
     std::string line = "";
-    bool data_updated = false;
 
-    // 한 줄(Line) 단위로 읽어오기 위한 간단한 루프
-    while (!data_updated) {
+    while (true) {
         char c;
         int n = read(serial_fd, &c, 1);
         if (n > 0) {
             if (c == '\n') {
-                // std::cout<<"[Raw GPS]"<<line<<"\n";
-                // 줄바꿈을 만나면 파싱 시도
-                if (parse_nmea(line, out_lat, out_lon, out_time)) {
-                    data_updated = true; // 파싱 성공시 루프 탈출
+                // 1. $GPGGA 또는 $GNGGA 문장인지 확인
+                if (line.find("$GPGGA") == 0 || line.find("$GNGGA") == 0) {
+                    
+                    // 2. 파싱 시도 (데이터가 텅 비었으면 무시됨)
+                    parse_nmea(line, out_lat, out_lon, out_time);
+                    
+                    // 3. 데이터가 비어있든 채워져 있든, 문장을 한 번 검사했으면 루프 강제 탈출!
+                    // (스레드가 무한정 멈춰있는 것을 방지)
+                    return; 
                 }
-                // else{
-                //     out_time = "2026-08-19T12:00:00";
-                //     data_updated=true; // temp for test
-                // }
-                line = ""; // 다음 줄을 위해 초기화
+                line = ""; // 다른 종류의 NMEA 문장은 무시하고 다음 줄을 위해 초기화
             } else if (c != '\r') {
                 line += c;
             }
@@ -127,32 +126,35 @@ void GpsSensor::update_gps(double& out_lat, double& out_lon, std::string& out_ti
 }
 
 void gps_thread(){
-    std::cout<<"[GPS Thread]\n";
-    // 1. 스레드가 시작될 때 GPS 센서 객체를 생성하고 초기화합니다.
-    // 라즈베리파이4의 UART 포트 경로를 적어줍니다. 기본 하드웨어 시리얼은 보통 "/dev/ttyS0" 입니다.
+    std::cout<<"[GPS Thread] Started\n";
     GpsSensor sensor(GPS_SERIAL_PORT); 
     sensor.init();
 
-    // 센서 데이터를 받아올 로컬 임시 변수들
-    double parsed_lat = 0.0;
-    double parsed_lon = 0.0;
-    std::string parsed_time = "";
-
     while(true){
-        // 2. GPS 센서로부터 새로운 데이터를 읽어옵니다. 
-        // (update_gps 내부 루프 덕분에 유효한 NMEA 문장이 파싱될 때까지 블로킹됩니다)
+        // 매 루프마다 지역 변수를 0.0으로 싹 비워줍니다.
+        double parsed_lat = 0.0;
+        double parsed_lon = 0.0;
+        std::string parsed_time = "";
+
+        // 블로킹 없이 GNGGA 문장을 하나 읽고 바로 반환됨
         sensor.update_gps(parsed_lat, parsed_lon, parsed_time);
 
-        // 3. 읽어온 데이터를 안전하게 전역 공유 변수에 업데이트합니다.
         {
             std::lock_guard<std::mutex> lock(gpsMutex);
-            globalGpsData.latitude = parsed_lat;
-            globalGpsData.longitude = parsed_lon;
-            globalGpsData.timestamp = parsed_time; // 타임스탬프 구조체 멤버 변수 연동
-            globalGpsData.isValid = true;
+            
+            // 파싱된 위도/경도가 0.0이 아닐 때(위성을 잡아 정상 파싱되었을 때)만 유효값으로 처리
+            if (parsed_lat != 0.0 && parsed_lon != 0.0) {
+                globalGpsData.latitude = parsed_lat;
+                globalGpsData.longitude = parsed_lon;
+                globalGpsData.timestamp = parsed_time;
+                globalGpsData.isValid = true;
+            } else {
+                // 아직 위성을 못 찾아서 0.0이 나왔다면 유효하지 않다고 표시
+                globalGpsData.isValid = false; 
+            }
         }
 
-        // 시리얼 데이터 수신 타이밍과 CPU 과점유 방지를 위해 아주 잠깐 쉬어줍니다.
+        // CPU 과점유 방지
         usleep(50000); // 50ms 대기
     }
 }
