@@ -22,11 +22,10 @@ static size_t WriteCallback(void *contents, size_t size, size_t nmemb, void *use
 }
 
 void http_transmission_thread() {
-    std::cout<<"\nhttp thread\n";
     curl_global_init(CURL_GLOBAL_ALL);
 
     const char* HTTP_API_URL = "https://plogrid.p-e.kr/api/v1/trashes/waste-classification";
-
+    std::cout<<"\n[http thread] init\n";
     while (true) {
         PloggingData dataToSend;
         bool hasData = false;
