@@ -56,6 +56,7 @@ void Ultrasonic::set_base(){
     }
 
     base_distance = sum / 10.0;
+    base_distance-=base_distance/10;
 }
 
 bool Ultrasonic::detect_event(double distance){
