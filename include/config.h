@@ -7,7 +7,7 @@
 #define ECHO_PIN_1 2
 
 // detect_event
-#define DETECT_GAP 5.0
+#define DETECT_GAP 10
 #define DETECT_COUNT 2
 #define BASE_DISTANCE 27
 
