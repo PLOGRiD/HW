@@ -147,6 +147,8 @@ void gps_thread(){
                 globalGpsData.latitude = parsed_lat;
                 globalGpsData.longitude = parsed_lon;
                 globalGpsData.timestamp = parsed_time;
+
+                std::cout<<"위도: "<<parsed_lat<<"\n경도: "<<parsed_lon<<"\n";
                 globalGpsData.isValid = true;
             } else {
                 // 아직 위성을 못 찾아서 0.0이 나왔다면 유효하지 않다고 표시
