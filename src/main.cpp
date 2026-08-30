@@ -53,7 +53,9 @@ int main() {
     // thread
     std::thread eventThread(event_processing_thread, std::ref(ultrasonic_1), std::ref(ultrasonic_2), std::ref(cam), std::ref(spectro), std::ref(led), std::ref(servo));
     std::thread httpThread(http_transmission_thread);
+    std::thread gpsThread(gps_thread);
 
+    gpsThread.join();
     eventThread.join();
     httpThread.join();
 
