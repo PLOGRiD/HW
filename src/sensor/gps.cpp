@@ -111,10 +111,10 @@ void GpsSensor::update_gps(double& out_lat, double& out_lon, std::string& out_ti
                 if (parse_nmea(line, out_lat, out_lon, out_time)) {
                     data_updated = true; // 파싱 성공시 루프 탈출
                 }
-                else{
-                    out_time = "2026-08-19T12:00:00";
-                    data_updated=true; // temp for test
-                }
+                // else{
+                //     out_time = "2026-08-19T12:00:00";
+                //     data_updated=true; // temp for test
+                // }
                 line = ""; // 다음 줄을 위해 초기화
             } else if (c != '\r') {
                 line += c;
