@@ -44,10 +44,6 @@ void event_processing_thread(Ultrasonic& ultrasonic_1, Ultrasonic& ultrasonic_2,
         std::cout << "[eventThread] 투입구 폐쇄 완료\n";
         servo.close_lid();
 
-        // temp
-        std::string dummy;
-        std::getline(std::cin, dummy);
-
         std::cout << "[eventThread] 이미지 촬영 시작\n";
 
         // 이미지 촬영
@@ -81,9 +77,6 @@ void event_processing_thread(Ultrasonic& ultrasonic_1, Ultrasonic& ultrasonic_2,
         std::cout << "[eventThread] 시스템 리셋 시작\n";
         servo.reset(); 
 
-        // temp
-        std::cout<<"[eventThread] finish reset\n";
-        std::getline(std::cin, dummy);
     }
 }
 
