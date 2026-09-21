@@ -71,9 +71,19 @@ std::string Camera::capture() {
     // 안전빵으로 쓰기 버퍼가 완전히 닫힐 때까지 100ms 추가 대기
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
-    std::time_t now = std::time(nullptr);
-    std::string final_filename = "./images/" + std::to_string(now) + ".jpg";
+    // std::time_t now = std::time(nullptr);
+    // std::string final_filename = "./images/" + std::to_string(now) + ".jpg";
     
+    std::time_t now = std::time(nullptr);
+    std::tm* now_tm = std::localtime(&now); // 로컬 시간으로 변환
+    
+    char time_buffer[80];
+    // 원하는 포맷 지정 (예: 20260921_175327)
+    // -을 넣고 싶다면 "%Y-%m-%d_%H-%M-%S" 로 변경하시면 됩니다.
+    std::strftime(time_buffer, sizeof(time_buffer), "%Y%m%d_%H%M%S", now_tm);
+    
+    std::string final_filename = "./images/" + std::string(time_buffer) + ".jpg";
+
     std::filesystem::rename(temp_file, final_filename);
 
     std::cout << "[Camera] Saved: " << final_filename << "\n";

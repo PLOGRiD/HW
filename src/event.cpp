@@ -41,8 +41,9 @@ void event_processing_thread(Ultrasonic& ultrasonic_1, Ultrasonic& ultrasonic_2,
             std::cout << "[eventThread] GPS 데이터 복사 완료\n";
         }
 
-        std::cout << "[eventThread] 투입구 폐쇄 완료\n";
+
         servo.close_lid();
+        std::cout << "[eventThread] 투입구 폐쇄 완료\n";
 
         std::cout << "[eventThread] 이미지 촬영 시작\n";
 
@@ -81,7 +82,7 @@ void event_processing_thread(Ultrasonic& ultrasonic_1, Ultrasonic& ultrasonic_2,
 }
 
 
-void event_for_AI_Thread(Camera& cam, SpectroscopySensor& spec, LedStrip& led) {
+void event_for_AI_Thread(Camera& cam, SpectroscopySensor& spec, LedStrip& led, ServoManager& servo) {
     std::cout << "[eventThread] 레퍼런스 측정 시작\n";
     spec.calibrate_references();
     std::cout << "[eventThread] 레퍼런스 측정 완료\n";
@@ -92,6 +93,7 @@ void event_for_AI_Thread(Camera& cam, SpectroscopySensor& spec, LedStrip& led) {
 
         std::string dummy;
         std::getline(std::cin, dummy);
+        servo.close_lid();
 
         std::cout << "[eventThread] 이미지 촬영 시작\n";
 
@@ -112,13 +114,14 @@ void event_for_AI_Thread(Camera& cam, SpectroscopySensor& spec, LedStrip& led) {
         spec.collect_data_for_AI(image_path);
 
         std::cout<<"[eventThread] 분광 데이터 수집 완료\n";
+        servo.open_lid();
     }
 }
 
 
 
 
-void event_for_test_Thread(Camera& cam, SpectroscopySensor& spec, LedStrip& led) {
+void event_for_test_Thread(Camera& cam, SpectroscopySensor& spec, LedStrip& led, ServoManager& servo) {
     std::cout << "[eventThread] 레퍼런스 측정 시작\n";
     spec.calibrate_references();
     std::cout << "[eventThread] 레퍼런스 측정 완료\n";
@@ -131,6 +134,7 @@ void event_for_test_Thread(Camera& cam, SpectroscopySensor& spec, LedStrip& led)
 
         std::string dummy;
         std::getline(std::cin, dummy);
+        servo.close_lid();
 
         PloggingData currentData;
 
@@ -166,7 +170,8 @@ void event_for_test_Thread(Camera& cam, SpectroscopySensor& spec, LedStrip& led)
             std::cout << "[eventThread] 큐 적재 완료\n";
             std::cout<<"[eventThread] 현재 전송 대기열: " << uploadQueue.size() << "개\n";
         }
-
+        
+        servo.open_lid();
         std::cout << "[eventThread] 쓰레기를 제거하세요\n";
     }
 }
