@@ -8,7 +8,16 @@
 #include <chrono>
 #include <fstream>
 #include <string>
+#include <ctime>
 
+
+std::string epoch_to_iso8601(int64_t epoch_sec) {
+    std::time_t t = static_cast<std::time_t>(epoch_sec);
+    std::tm* tm_ptr = std::localtime(&t);
+    char buf[30];
+    std::strftime(buf, sizeof(buf), "%Y-%m-%dT%H:%M:%S", tm_ptr);
+    return std::string(buf);
+}
 
 void event_processing_thread(Ultrasonic& ultrasonic_1, Ultrasonic& ultrasonic_2, Camera& cam, SpectroscopySensor& spec, LedStrip& led, ServoManager& servo) {
     std::cout << "[이벤트 스레드]\n";
@@ -37,15 +46,30 @@ void event_processing_thread(Ultrasonic& ultrasonic_1, Ultrasonic& ultrasonic_2,
         // gps 데이터 복사
         {
             std::lock_guard<std::mutex> lock(gpsMutex);
-            currentData.gps_location = globalGpsData; 
-            std::cout << "[eventThread] GPS 데이터 복사 완료\n";
+            currentData.gps_location = globalGpsData;
         }
+        std::cout << "[eventThread] GPS 데이터 복사 완료\n";
 
 
         servo.close_lid();
         std::cout << "[eventThread] 투입구 폐쇄 완료\n";
 
         std::cout << "[eventThread] 이미지 촬영 시작\n";
+
+        auto event_now = std::chrono::system_clock::now();
+        int64_t event_time_sec = std::chrono::duration_cast<std::chrono::seconds>(event_now.time_since_epoch()).count();
+
+        if(currentData.gps_location.isValid){ // 신호를 한번이라도 잡은 경우
+            currentData.gps_age_sec = event_time_sec - currentData.gps_location.timestamp;
+        }
+        else{ // 신호를 한번도 못 잡은 경우
+            currentData.gps_age_sec = -1;
+        }
+        currentData.timestamp = epoch_to_iso8601(event_time_sec);
+
+        if (!currentData.gps_location.isValid) {
+            std::cout << "[eventThread] 경고: GPS 신호 없음, "<< currentData.gps_age_sec << "초 전 마지막 유효 위치 사용\n";
+        }
 
         // 이미지 촬영
         led.on();
