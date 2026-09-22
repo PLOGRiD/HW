@@ -8,7 +8,7 @@
 struct GpsData {
     double latitude = 0.0;
     double longitude = 0.0;
-    std::string timestamp = "";
+    int64_t timestamp = 0;
     bool isValid = false;
 };
 
@@ -16,6 +16,8 @@ struct PloggingData {
     std::string image_path;
     SpectroscopyData spec_data;
     GpsData gps_location;
+    int64_t gps_age_sec;
+    std::string timestamp;
 };
 
 // 공유 자원
