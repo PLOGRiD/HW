@@ -86,13 +86,13 @@ void SpectroscopySensor::calibrate_references() {
 
     std::filesystem::create_directory("./spectroscopy_datas");
 
-    csv_dark.open("./spectroscopy_datas/dark_reference", std::ios::out | std::ios::app);
+    csv_dark.open("./spectroscopy_datas/dark_reference.csv", std::ios::out | std::ios::app);
     csv_dark.seekp(0, std::ios::end);
     if(csv_dark.tellp() == 0){
         csv_dark<<"A,B,C,D,E,F,G,H,I,J,K,L,R,S,T,U,V,W\n";
     }
 
-    csv_white.open("./spectroscopy_datas/white_reference", std::ios::out | std::ios::app);
+    csv_white.open("./spectroscopy_datas/white_reference.csv", std::ios::out | std::ios::app);
     csv_white.seekp(0, std::ios::end);
     if(csv_white.tellp() == 0){
         csv_white<<"A,B,C,D,E,F,G,H,I,J,K,L,R,S,T,U,V,W\n";
