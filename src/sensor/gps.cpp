@@ -10,6 +10,17 @@
 #include <cstring>
 #include <chrono>
 
+// ============================================================
+// 임시 GPS 하드코딩 스위치
+// 실제 GPS를 쓸 때는 아래 #define 한 줄만 주석 처리하세요.
+// ============================================================
+#define USE_FAKE_GPS
+
+#ifdef USE_FAKE_GPS
+static const double FAKE_LAT = 37.6553745867164;
+static const double FAKE_LON = 127.048004406504;
+#endif
+
 GpsSensor::GpsSensor(std::string port) : port_name(port), serial_fd(-1) {}
 
 GpsSensor::~GpsSensor() {
@@ -57,12 +68,7 @@ bool GpsSensor::parse_nmea(const std::string& nmea_line, double& lat, double& lo
 
             // Fix Quality가 0이면 유효한 위치를 얻지 못한 상태
             if (tokens[6] == "0") {
-                // temp
-                lat =  37.6553745867164;
-                lon = 127.048004406504;
-
-                return true;
-                //return false;
+                return false;
             }
 
             time = std::chrono::duration_cast<std::chrono::seconds>(
@@ -95,6 +101,14 @@ bool GpsSensor::parse_nmea(const std::string& nmea_line, double& lat, double& lo
 }
 
 bool GpsSensor::update_gps(double& out_lat, double& out_lon, int64_t& out_time) {
+#ifdef USE_FAKE_GPS
+    // 임시: 시리얼 포트/NMEA와 무관하게 고정값 반환
+    out_lat = FAKE_LAT;
+    out_lon = FAKE_LON;
+    out_time = std::chrono::duration_cast<std::chrono::seconds>(
+        std::chrono::system_clock::now().time_since_epoch()).count();
+    return true;
+#else
     if (serial_fd == -1) {
         return false;
     }
@@ -105,28 +119,26 @@ bool GpsSensor::update_gps(double& out_lat, double& out_lon, int64_t& out_time) 
         char c;
         int n = read(serial_fd, &c, 1);
 
-        // if (n > 0) {
-        //     if (c == '\n') {
+        if (n > 0) {
+            if (c == '\n') {
 
-        //         if (line.find("$GPGGA") == 0 ||
-        //             line.find("$GNGGA") == 0) {
+                if (line.find("$GPGGA") == 0 ||
+                    line.find("$GNGGA") == 0) {
 
-        //             return parse_nmea(line, out_lat, out_lon, out_time);
-        //         }
+                    return parse_nmea(line, out_lat, out_lon, out_time);
+                }
 
-        //         line = "";
-        //     }
-        //     else if (c != '\r') {
-        //         line += c;
-        //     }
-        // }
-        // else {
-        //     usleep(10000);
-        // }
-
-        //temp
-        return parse_nmea(line, out_lat, out_lon, out_time);
+                line = "";
+            }
+            else if (c != '\r') {
+                line += c;
+            }
+        }
+        else {
+            usleep(10000);
+        }
     }
+#endif
 }
 
 void gps_thread(){
