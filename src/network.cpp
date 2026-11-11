@@ -7,10 +7,10 @@
 #include <cstdio>
 #include <string>
 #include <unistd.h>
-#include <mosquitto.h> 
+#include <mosquitto.h>
 
 
-// // mqtt 서버 설정 
+// // mqtt 서버 설정
 // const char* BROKER_ADDRESS = "127.0.0.1"; // 예: "192.168.0.10"
 // const int BROKER_PORT = 1883;
 // const char* TOPIC_NAME = "plogging/gps";
@@ -24,14 +24,18 @@ static size_t WriteCallback(void *contents, size_t size, size_t nmemb, void *use
 void http_transmission_thread() {
     curl_global_init(CURL_GLOBAL_ALL);
 
-    const char* HTTP_API_URL = "https://plogrid.p-e.kr/api/v1/trashes/waste-classification";
-    std::cout<<"\n[http thread] init\n";
+    const char* HTTP_API_URL =
+        "https://plogrid.p-e.kr/api/v1/trashes/waste-classification";
+
+    std::cout << "\n[http thread] init\n";
+
     while (true) {
         PloggingData dataToSend;
         bool hasData = false;
 
         {
             std::lock_guard<std::mutex> lock(queueMutex);
+
             if (!uploadQueue.empty()) {
                 dataToSend = uploadQueue.front();
                 uploadQueue.pop();
@@ -40,14 +44,20 @@ void http_transmission_thread() {
         }
 
         if (hasData) {
-            std::cout << "\n[HTTP] 전송 준비: " << dataToSend.image_path << "\n";
-            
+            std::cout << "\n[HTTP] 전송 준비: "
+                      << dataToSend.image_path << "\n";
+
             CURL *curl = curl_easy_init();
-            if(curl) {
+
+            if (curl) {
                 curl_mime *form = NULL;
                 curl_mimepart *field = NULL;
 
-                curl_easy_setopt(curl, CURLOPT_URL, HTTP_API_URL); 
+                curl_easy_setopt(curl, CURLOPT_URL, HTTP_API_URL);
+
+                // HTTP timeout 설정
+                curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 5L);
+                curl_easy_setopt(curl, CURLOPT_TIMEOUT, 30L);
 
                 form = curl_mime_init(curl);
 
@@ -57,36 +67,62 @@ void http_transmission_thread() {
                 curl_mime_filedata(field, dataToSend.image_path.c_str());
 
                 // 폼 데이터에 string 값을 추가하는 람다 함수
-                auto add_string_field = [&](const char* name, const std::string& value) {
-                    curl_mimepart* part = curl_mime_addpart(form);
-                    curl_mime_name(part, name);
-                    curl_mime_data(part, value.c_str(), CURL_ZERO_TERMINATED);
-                };
+                auto add_string_field =
+                    [&](const char* name, const std::string& value) {
+                        curl_mimepart* part = curl_mime_addpart(form);
+                        curl_mime_name(part, name);
+                        curl_mime_data(
+                            part,
+                            value.c_str(),
+                            CURL_ZERO_TERMINATED
+                        );
+                    };
 
                 // 폼 데이터에 double 값을 추가하는 람다 함수
-                auto add_double_field = [&](const char* name, double value) {
-                    curl_mimepart* part = curl_mime_addpart(form);
-                    curl_mime_name(part, name);
-                    std::string val_str = std::to_string(value);
-                    curl_mime_data(part, val_str.c_str(), CURL_ZERO_TERMINATED);
-                };
+                auto add_double_field =
+                    [&](const char* name, double value) {
+                        curl_mimepart* part = curl_mime_addpart(form);
+                        curl_mime_name(part, name);
 
-                // 
-                auto add_int64_field = [&](const char* name, int64_t value) {
-                    curl_mimepart* part = curl_mime_addpart(form);
-                    curl_mime_name(part, name);
-                    std::string val_str = std::to_string(value);
-                    curl_mime_data(part, val_str.c_str(), CURL_ZERO_TERMINATED);
-                };
+                        std::string val_str = std::to_string(value);
+
+                        curl_mime_data(
+                            part,
+                            val_str.c_str(),
+                            CURL_ZERO_TERMINATED
+                        );
+                    };
+
+                // 폼 데이터에 int64_t 값을 추가하는 람다 함수
+                auto add_int64_field =
+                    [&](const char* name, int64_t value) {
+                        curl_mimepart* part = curl_mime_addpart(form);
+                        curl_mime_name(part, name);
+
+                        std::string val_str = std::to_string(value);
+
+                        curl_mime_data(
+                            part,
+                            val_str.c_str(),
+                            CURL_ZERO_TERMINATED
+                        );
+                    };
 
                 // 디바이스 id 추가
                 add_int64_field("deviceId", 1);
 
                 add_string_field("timestamp", dataToSend.timestamp);
 
-                // 2. 패키징된 GPS 파라미터 추가 (dataToSend.gps_location 사용)
-                add_double_field("latitude", dataToSend.gps_location.latitude);
-                add_double_field("longitude", dataToSend.gps_location.longitude);
+                // 2. 패키징된 GPS 파라미터 추가
+                add_double_field(
+                    "latitude",
+                    dataToSend.gps_location.latitude
+                );
+
+                add_double_field(
+                    "longitude",
+                    dataToSend.gps_location.longitude
+                );
 
                 // 3. 패키징된 분광센서 데이터 파라미터 추가
                 add_double_field("a", dataToSend.spec_data.channel[0]);
@@ -112,25 +148,72 @@ void http_transmission_thread() {
 
                 // 4. 서버로부터 탐지 결과(JSON)를 받기 위한 버퍼 설정
                 std::string readBuffer;
-                curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
-                curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
+
+                curl_easy_setopt(
+                    curl,
+                    CURLOPT_WRITEFUNCTION,
+                    WriteCallback
+                );
+
+                curl_easy_setopt(
+                    curl,
+                    CURLOPT_WRITEDATA,
+                    &readBuffer
+                );
 
                 // HTTP POST 요청 전송
                 CURLcode res = curl_easy_perform(curl);
-                
-                if(res != CURLE_OK) {
-                    std::cerr << "[HTTP] 전송 실패: " << curl_easy_strerror(res) << "\n";
-                    // 실패 시 큐에 다시 집어넣어 재시도 (재포장 불필요)
+
+                // HTTP 응답 코드 확인
+                long response_code = 0;
+
+                if (res == CURLE_OK) {
+                    curl_easy_getinfo(
+                        curl,
+                        CURLINFO_RESPONSE_CODE,
+                        &response_code
+                    );
+                }
+
+                // ----------------------------------------
+                // 1. libcurl 통신 자체가 실패한 경우
+                // ----------------------------------------
+                if (res != CURLE_OK) {
+
+                    std::cerr
+                        << "[HTTP] 전송 실패: "
+                        << curl_easy_strerror(res)
+                        << "\n";
+
+                    // 재전송을 위해 큐에 다시 추가
                     {
                         std::lock_guard<std::mutex> lock(queueMutex);
                         uploadQueue.push(dataToSend);
                     }
-                    std::this_thread::sleep_for(std::chrono::seconds(3));
-                } else {
-                    std::cout << "[HTTP] 전송 완료\n";
-                    std::cout << "[HTTP] 서버 응답: " << readBuffer << "\n";
-                    
-                    // 전송이 성공적으로 끝났을 때만 로컬 이미지 삭제
+
+                    std::this_thread::sleep_for(
+                        std::chrono::seconds(3)
+                    );
+                }
+
+                // ----------------------------------------
+                // 2. HTTP 2xx → 서버 정상 처리
+                // ----------------------------------------
+                else if (response_code >= 200 &&
+                         response_code < 300) {
+
+                    std::cout
+                        << "[HTTP] 전송 성공 (HTTP "
+                        << response_code
+                        << ")\n";
+
+                    std::cout
+                        << "[HTTP] 서버 응답: "
+                        << readBuffer
+                        << "\n";
+
+                    // 현재는 이미지 품질 확인을 위해 삭제하지 않음
+                    //
                     // if (std::remove(dataToSend.image_path.c_str()) == 0) {
                     //     std::cout << "[HTTP] 이미지 삭제 완료\n";
                     // } else {
@@ -138,14 +221,80 @@ void http_transmission_thread() {
                     // }
                 }
 
+                // ----------------------------------------
+                // 3. HTTP 5xx → 서버 오류 → 재전송
+                // ----------------------------------------
+                else if (response_code >= 500 &&
+                         response_code < 600) {
+
+                    std::cerr
+                        << "[HTTP] 서버 오류 (HTTP "
+                        << response_code
+                        << ") - 재전송합니다.\n";
+
+                    std::cerr
+                        << "[HTTP] 서버 응답: "
+                        << readBuffer
+                        << "\n";
+
+                    // 서버가 정상적으로 처리하지 못했으므로
+                    // 큐에 다시 추가
+                    {
+                        std::lock_guard<std::mutex> lock(queueMutex);
+                        uploadQueue.push(dataToSend);
+                    }
+
+                    std::this_thread::sleep_for(
+                        std::chrono::seconds(3)
+                    );
+                }
+
+                // ----------------------------------------
+                // 4. HTTP 4xx → 요청 오류 → 재전송하지 않음
+                // ----------------------------------------
+                else {
+
+                    std::cerr
+                        << "[HTTP] 요청 오류 (HTTP "
+                        << response_code
+                        << ")\n";
+
+                    std::cerr
+                        << "[HTTP] 서버 응답: "
+                        << readBuffer
+                        << "\n";
+
+                    // 요청 자체의 문제일 가능성이 있으므로
+                    // 재전송하지 않음
+                    // 이미지도 삭제하지 않음
+                }
+
+                // 모든 경우 공통 정리
                 curl_mime_free(form);
                 curl_easy_cleanup(curl);
+
+            } else {
+                // CURL 초기화 실패
+                std::cerr << "[HTTP] CURL 초기화 실패\n";
+
+                // 전송하지 못했으므로 다시 큐에 추가
+                {
+                    std::lock_guard<std::mutex> lock(queueMutex);
+                    uploadQueue.push(dataToSend);
+                }
+
+                std::this_thread::sleep_for(
+                    std::chrono::seconds(3)
+                );
             }
+
         } else {
-            std::this_thread::sleep_for(std::chrono::milliseconds(500));
+            std::this_thread::sleep_for(
+                std::chrono::milliseconds(500)
+            );
         }
     }
-    
+
     curl_global_cleanup();
 }
 

@@ -3,6 +3,7 @@
 #include <string>
 #include <map>
 #include "SparkFun_AS7265X.h"
+#include "sensor/servo.h"
 
 struct SpectroscopyData{
     // float A, B, C, D, E, F; 
@@ -16,6 +17,7 @@ class SpectroscopySensor{
         AS7265X as7265x;
         std::map<int, std::string> labels;
         std::string file_name;
+        std::string session_id;
         SpectroscopyData dark_ref;
         SpectroscopyData white_ref;
 
@@ -24,9 +26,11 @@ class SpectroscopySensor{
     public:
         SpectroscopySensor();
         bool init();
+        bool load_references_from_file();
         SpectroscopyData read_all_channels_with_bulb();
         SpectroscopyData read_all_channels();
         SpectroscopyData normalize_all_channels();
+        SpectroscopyData normalize_all_channels(const SpectroscopyData& raw_data);
         void collect_data_for_AI(std::string image_path);
-        void calibrate_references();
+        void calibrate_references(ServoManager& servo);
 };

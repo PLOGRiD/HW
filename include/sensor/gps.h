@@ -13,7 +13,7 @@ public:
     GpsSensor(std::string port);
     ~GpsSensor();
     void init();
-    void update_gps(double& out_lat, double& out_lon, int64_t& out_time);
+    bool update_gps(double& out_lat, double& out_lon, int64_t& out_time);
 };
 
 void gps_thread();

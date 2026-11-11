@@ -20,7 +20,12 @@ std::string epoch_to_iso8601(int64_t epoch_sec) {
 }
 
 void event_processing_thread(Ultrasonic& ultrasonic_1, Ultrasonic& ultrasonic_2, Camera& cam, SpectroscopySensor& spec, LedStrip& led, ServoManager& servo) {
-    std::cout << "[이벤트 스레드]\n";
+    std::cout << "[eventThread]\n";
+
+    if (!spec.load_references_from_file()) {
+        std::cerr << "[eventThread] 레퍼런스 로드 실패\n";
+        return;
+    }
 
     // 메인로직 시작
     while (true) {
@@ -79,6 +84,10 @@ void event_processing_thread(Ultrasonic& ultrasonic_1, Ultrasonic& ultrasonic_2,
 
         if(currentData.image_path.empty()){
             std::cout << "[Camera] capture failed\n";
+            led.off();
+            servo.open_bottom();
+            std::this_thread::sleep_for(std::chrono::milliseconds(2000));
+            servo.reset();
             continue;
         }
 
@@ -108,7 +117,7 @@ void event_processing_thread(Ultrasonic& ultrasonic_1, Ultrasonic& ultrasonic_2,
 
 void event_for_AI_Thread(Camera& cam, SpectroscopySensor& spec, LedStrip& led, ServoManager& servo) {
     std::cout << "[eventThread] 레퍼런스 측정 시작\n";
-    spec.calibrate_references();
+    spec.calibrate_references(std::ref(servo));
     std::cout << "[eventThread] 레퍼런스 측정 완료\n";
 
     // 메인로직 시작
@@ -147,7 +156,7 @@ void event_for_AI_Thread(Camera& cam, SpectroscopySensor& spec, LedStrip& led, S
 
 void event_for_test_Thread(Camera& cam, SpectroscopySensor& spec, LedStrip& led, ServoManager& servo) {
     std::cout << "[eventThread] 레퍼런스 측정 시작\n";
-    spec.calibrate_references();
+    // spec.calibrate_references();
     std::cout << "[eventThread] 레퍼런스 측정 완료\n";
 
     std::cout << "[이벤트 스레드]\n";

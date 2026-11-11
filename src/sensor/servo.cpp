@@ -32,6 +32,7 @@ void ServoManager::set_angle(int pin, int pwm_value) {
 
 void ServoManager::close_lid() {
     std::cout << "[Servo] 뚜껑 닫기\n";
+    
     softPwmWrite(top_left_pin, ANGLE_135); 
     std::this_thread::sleep_for(std::chrono::milliseconds(SERVO_DELAY));
     softPwmWrite(top_left_pin, 0); // 모터 전력 차단 (파닥거림 방지)
@@ -43,13 +44,14 @@ void ServoManager::close_lid() {
 
 void ServoManager::open_lid() {
     std::cout << "[Servo] 뚜껑 열기\n";
-    softPwmWrite(top_left_pin, ANGLE_45);
-    std::this_thread::sleep_for(std::chrono::milliseconds(SERVO_DELAY));
-    softPwmWrite(top_left_pin, 0); 
 
     softPwmWrite(top_right_pin, ANGLE_45);
     std::this_thread::sleep_for(std::chrono::milliseconds(SERVO_DELAY));
     softPwmWrite(top_right_pin, 0); 
+
+    softPwmWrite(top_left_pin, ANGLE_45);
+    std::this_thread::sleep_for(std::chrono::milliseconds(SERVO_DELAY));
+    softPwmWrite(top_left_pin, 0); 
 }
 
 void ServoManager::open_bottom() {
@@ -76,6 +78,6 @@ void ServoManager::close_bottom() {
 
 void ServoManager::reset() {
     std::cout << "[Servo] 시스템 초기화\n";
-    open_lid();
     close_bottom();
+    open_lid();
 }
